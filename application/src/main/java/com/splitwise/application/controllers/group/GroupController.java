@@ -47,4 +47,9 @@ public class GroupController {
         service.acceptInvite(id);
     }
 
+    @PatchMapping(Urls.GROUP_INVITE_REJECT)
+    public void rejectInvite(@PathVariable(value = "id") Long id) {
+        service.rejectInvite(id);
+    }
+
 }
