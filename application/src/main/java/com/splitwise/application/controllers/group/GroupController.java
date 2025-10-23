@@ -3,6 +3,7 @@ package com.splitwise.application.controllers.group;
 
 import com.splitwise.application.models.dtos.group.CreateGroupRequest;
 import com.splitwise.application.models.dtos.group.EditGroupRequest;
+import com.splitwise.application.models.dtos.group.GroupInviteRequest;
 import com.splitwise.application.models.dtos.group.GroupResponse;
 import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.group.GroupService;
@@ -40,6 +41,11 @@ public class GroupController {
     @PutMapping(Urls.GROUP_ID)
     public ResponseEntity<GroupResponse> update(@PathVariable(value = "id") Long id, @Valid @RequestBody EditGroupRequest request) {
         return new ResponseEntity<>(service.update(id, request), HttpStatus.OK);
+    }
+
+    @PostMapping(Urls.GROUP_INVITE)
+    public void inviteToGroup(@PathVariable(value = "id") Long id, @Valid @RequestBody GroupInviteRequest request) {
+        service.inviteToGroup(id, request);
     }
 
     @PatchMapping(Urls.GROUP_INVITE_ACCEPT)

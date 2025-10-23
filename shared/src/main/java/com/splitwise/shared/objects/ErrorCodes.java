@@ -22,6 +22,8 @@ public enum ErrorCodes {
     NOT_OWNER_OF_GROUP(42, "User Is Not Owner Of This Group"),
     GROUP_INVITE_NOT_FOUND(43, "Group Invite Not Found"),
     GROUP_INVITE_NOT_CHANGEABLE(44, "Group Invite Is Already Accepted Or Rejected"),
+    USER_ALREADY_INVITED_TO_GROUP(45, "User Already Invited To Group"),
+    USER_ALREADY_MEMBER_OF_GROUP(46, "User Already Is Member Of This Group"),
 
 
     // General

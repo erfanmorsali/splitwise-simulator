@@ -9,6 +9,7 @@ public abstract class Urls {
     // Group Controller
     public static final String GROUP = "group";
     public static final String GROUP_ID = "group/{id}";
+    public static final String GROUP_INVITE = "group/{id}/invite";
     public static final String GROUP_INVITE_ACCEPT = "group/{id}/invite/accept";
     public static final String GROUP_INVITE_REJECT = "group/{id}/invite/reject";
 }

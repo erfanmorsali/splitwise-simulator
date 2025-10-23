@@ -74,7 +74,19 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void inviteToGroup(Long id, GroupInviteRequest request) {
+        GroupEntity group = findByIdOrThrowException(id);
+        checkGroupBelongsToUser(group);
 
+        Long invitedUserId = request.getInvitedUserId();
+        findUserByIdOrThrowException(invitedUserId);
+
+        checkInviteExistsOrInvitedUserIsMemberOfGroup(invitedUserId, group.getId());
+
+        GroupInviteEntity newInvite = request.convertToEntity(new GroupInviteEntity());
+        newInvite.setGroupId(id);
+        newInvite.setInviterId(JwtUser.getAuthenticatedUser().getId());
+
+        groupInviteRepository.save(newInvite);
     }
 
     @Override
@@ -156,5 +168,20 @@ public class GroupServiceImpl implements GroupService {
             throw new SystemException(StatusCodes.BAD_REQUEST, ErrorCodes.GROUP_INVITE_NOT_CHANGEABLE, "Cannot change status of this invite request");
         }
         return invite;
+    }
+
+    private void checkInviteExistsOrInvitedUserIsMemberOfGroup(Long userId, Long groupId) {
+        Optional<GroupInviteEntity> existingInvite = groupInviteRepository.findFirstByInvitedIdAndGroupId(userId, groupId);
+
+        if (existingInvite.isPresent()) {
+            GroupInviteEntity invite = existingInvite.get();
+
+            if (invite.getAccepted() == null) {
+                throw new SystemException(StatusCodes.BAD_REQUEST, ErrorCodes.USER_ALREADY_INVITED_TO_GROUP, "user already has invite for this group");
+            }
+            if (invite.getAccepted()) {
+                throw new SystemException(StatusCodes.BAD_REQUEST, ErrorCodes.USER_ALREADY_MEMBER_OF_GROUP, "user already in this group");
+            }
+        }
     }
 }
