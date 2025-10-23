@@ -62,5 +62,38 @@
                 references splitwise.groups;
         </sql>
     </changeSet>
+    <changeSet id="create-group-invite-entity" author="erfan" failOnError="true">
+        <sql>
+            create table splitwise.group_invites
+            (
+                id_pk         bigint not null,
+                created       timestamp(6),
+                deleted       timestamp(6),
+                updated       timestamp(6),
+                accepted      boolean,
+                group_id_fk   bigint,
+                invited_id_fk bigint,
+                inviter_id_fk bigint,
+                primary key (id_pk)
+            );
+
+            create sequence splitwise.group_invites_sequence start with 1 increment by 50;
+
+            alter table if exists splitwise.group_invites
+                add constraint FKfjnqryvwc5mtw00jacuipglj6
+                foreign key (group_id_fk)
+                references splitwise.groups;
+
+            alter table if exists splitwise.group_invites
+                add constraint FKhjhk1el9mbvrsyqgmg8mo0lvu
+                foreign key (invited_id_fk)
+                references splitwise.users;
+
+            alter table if exists splitwise.group_invites
+                add constraint FK6vsyspjmf2i43a49iupogndfw
+                foreign key (inviter_id_fk)
+                references splitwise.users;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
 

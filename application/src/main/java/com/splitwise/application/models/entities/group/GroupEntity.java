@@ -41,4 +41,6 @@ public class GroupEntity extends BaseEntity {
             joinColumns = @JoinColumn(name = "group_id_fk"),
             inverseJoinColumns = @JoinColumn(name = "user_id_fk"))
     private Set<UserEntity> users;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private Set<GroupInviteEntity> invites;
 }
