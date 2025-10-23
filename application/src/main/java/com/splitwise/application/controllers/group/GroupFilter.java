@@ -10,6 +10,8 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -64,5 +66,11 @@ public class GroupFilter extends PageableFilter {
                     cb.equal(root.get("creatorId"), userId)
             );
         });
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, userId, getPage(), getPageSize());
     }
 }

@@ -13,10 +13,14 @@ import com.splitwise.application.repositories.group.GroupInviteRepository;
 import com.splitwise.application.repositories.group.GroupRepository;
 import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.user.UserService;
+import com.splitwise.application.statics.Caches;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = Caches.GROUP_LIST, key = "#filter.hashCode()")
     public List<GroupResponse> getAll(GroupFilter filter) {
         return groupRepository.findAll(filter.toSpecification(), filter.toPageable()).stream()
                 .map(GroupResponse::new)
@@ -43,6 +48,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = Caches.GROUP, key = "#id")
     public GroupResponse getById(Long id) {
         GroupEntity group = findByIdAndFetchUsersOrThrowException(id);
         checkUserIsMemberOfGroup(group);
@@ -51,6 +57,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CachePut(value = Caches.GROUP,key = "#result.id")
     public GroupResponse create(CreateGroupRequest request) {
         Long userId = JwtUser.getAuthenticatedUser().getId();
         UserEntity user = findUserByIdOrThrowException(userId);
@@ -65,6 +72,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CachePut(value = Caches.GROUP, key = "#id")
     public GroupResponse update(Long id, EditGroupRequest request) {
         GroupEntity group = findByIdOrThrowException(id);
         checkGroupBelongsToUser(group);
@@ -76,6 +84,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = {Caches.GROUP, Caches.GROUP_LIST}, allEntries = true)
     public boolean delete(Long id) {
         GroupEntity group = findByIdOrThrowException(id);
         checkGroupBelongsToUser(group);

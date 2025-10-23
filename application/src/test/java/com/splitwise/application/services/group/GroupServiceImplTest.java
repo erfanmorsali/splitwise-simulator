@@ -76,7 +76,7 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void getById_youAreMemberOfGroup_success() {
+    void getById_success() {
         Set<UserEntity> members = new HashSet<>(List.of(createUser(currentUserId)));
         GroupEntity group = createGroup(1L, currentUserId, members);
         when(groupRepository.findGroupByIdAndFetchUsers(1L)).thenReturn(Optional.of(group));
