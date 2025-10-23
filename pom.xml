@@ -24,6 +24,7 @@
     <modules>
         <module>application</module>
         <module>notification</module>
+        <module>shared</module>
     </modules>
     <scm>
         <connection/>
