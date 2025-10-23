@@ -7,6 +7,7 @@ import lombok.Getter;
 public enum ErrorCodes {
     // User
     USER_NOT_FOUND(1, "User Not Found"),
+    USER_SUSPENDED(2, "User Is Suspended"),
 
 
     // Security

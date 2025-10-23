@@ -1,9 +1,6 @@
 package com.splitwise.application.services.auth;
 
-import com.splitwise.application.models.dtos.auth.OtpRequest;
-import com.splitwise.application.models.dtos.auth.RefreshTokenRequest;
-import com.splitwise.application.models.dtos.auth.TokenResponse;
-import com.splitwise.application.models.dtos.auth.VerifyOtpRequest;
+import com.splitwise.application.models.dtos.auth.*;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.security.JwtService;
 import com.splitwise.application.services.user.UserService;
@@ -67,6 +64,15 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     @Override
     public TokenResponse refresh(RefreshTokenRequest request) {
-        return new TokenResponse();
+        String userId = jwtService.extractUserId(request.getRefreshToken(), JwtTokenType.REFRESH_TOKEN);
+
+        UserEntity user = userService.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new SystemException(StausCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, "User not found"));
+
+        if (user.isSuspended()) {
+            throw new SystemException(StausCodes.FORBIDDEN, ErrorCodes.USER_SUSPENDED, "user is suspended");
+        }
+
+        return jwtService.refresh(request.getRefreshToken());
     }
 }
