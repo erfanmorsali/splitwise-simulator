@@ -1,7 +1,7 @@
 package com.splitwise.application.controllers.group;
 
 
-import com.splitwise.application.models.group.GroupResponse;
+import com.splitwise.application.models.dtos.group.GroupResponse;
 import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.group.GroupService;
 import com.splitwise.application.statics.Urls;

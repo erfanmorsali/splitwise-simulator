@@ -1,4 +1,4 @@
-package com.splitwise.application.models.group;
+package com.splitwise.application.models.dtos.group;
 
 
 import com.splitwise.application.models.entities.group.GroupEntity;
@@ -15,14 +15,13 @@ import java.util.HashSet;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateGroupRequest {
+public class GroupRequestBase {
     @NotNull
     @Size(min = 1, max = 50)
     private String name;
     @NotNull
     @Size(min = 1, max = 100)
     private String description;
-
 
     public GroupEntity convertToEntity(GroupEntity entity) {
         if (entity == null) {

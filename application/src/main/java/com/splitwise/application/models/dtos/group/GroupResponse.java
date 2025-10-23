@@ -1,4 +1,4 @@
-package com.splitwise.application.models.group;
+package com.splitwise.application.models.dtos.group;
 
 
 import com.splitwise.application.models.entities.group.GroupEntity;

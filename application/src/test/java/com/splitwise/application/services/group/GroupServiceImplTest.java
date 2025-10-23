@@ -1,9 +1,9 @@
 package com.splitwise.application.services.group;
 
 import com.splitwise.application.models.dtos.auth.UserContextDto;
+import com.splitwise.application.models.dtos.group.CreateGroupRequest;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
-import com.splitwise.application.models.group.CreateGroupRequest;
 import com.splitwise.application.repositories.group.GroupRepository;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.shared.objects.ErrorCodes;
