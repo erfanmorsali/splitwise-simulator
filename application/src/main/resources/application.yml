@@ -59,3 +59,8 @@ jwt:
       key: 5367566859703373367639792F41S784G468576D5A71347437
     refresh:
       key: 5367566423003373367639792F41S784G468576D5A71345298
+
+
+springdoc:
+  api-docs:
+    path: /api-docs
