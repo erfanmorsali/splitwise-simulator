@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="create-user-table" author="erfan" failOnError="true">
+        <sql>
+            create table splitwise.users
+            (
+                id_pk     bigint      not null,
+                created   timestamp(6),
+                deleted   timestamp(6),
+                updated   timestamp(6),
+                mobile    varchar(11) not null,
+                name      varchar(50) not null,
+                suspended boolean default false,
+                primary key (id_pk)
+            );
+
+            create sequence splitwise.users_sequence start with 1 increment by 50;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
+
