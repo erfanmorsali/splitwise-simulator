@@ -38,6 +38,10 @@ public class OtpService {
         return otpResponse;
     }
 
+    public boolean validateOtp(String key, String inputCode) {
+        return false;
+    }
+
 
     @Getter
     @Setter
