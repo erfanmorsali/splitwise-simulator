@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ public class GroupServiceImpl implements GroupService {
     private final GroupRepository groupRepository;
     private final UserService userService;
     private final GroupInviteRepository groupInviteRepository;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -73,7 +75,17 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void inviteToGroup(Long id, GroupInviteRequest request) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean delete(Long id) {
+        GroupEntity group = findByIdOrThrowException(id);
+        checkGroupBelongsToUser(group);
+        group.setDeleted(LocalDateTime.now());
+        groupRepository.save(group);
+        return true;
+    }
+
+    @Override
+    public boolean inviteToGroup(Long id, GroupInviteRequest request) {
         GroupEntity group = findByIdOrThrowException(id);
         checkGroupBelongsToUser(group);
 
@@ -87,6 +99,7 @@ public class GroupServiceImpl implements GroupService {
         newInvite.setInviterId(JwtUser.getAuthenticatedUser().getId());
 
         groupInviteRepository.save(newInvite);
+        return true;
     }
 
     @Override

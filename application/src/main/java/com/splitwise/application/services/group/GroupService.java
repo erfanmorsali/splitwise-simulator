@@ -17,9 +17,11 @@ public interface GroupService {
 
     GroupResponse update(Long id, EditGroupRequest request);
 
-    void inviteToGroup(Long id, GroupInviteRequest request);
+    boolean inviteToGroup(Long id, GroupInviteRequest request);
 
     boolean acceptInvite(Long groupId);
 
     boolean rejectInvite(Long groupId);
+
+    boolean delete(Long id);
 }

@@ -13,6 +13,6 @@ import java.util.Optional;
 @Repository
 public interface GroupRepository extends JpaRepository<GroupEntity, Long>, JpaSpecificationExecutor<GroupEntity> {
 
-    @Query(value = "select entity from GroupEntity entity left join fetch entity.users left join fetch entity.creator where entity.id = :id")
+    @Query(value = "select entity from GroupEntity entity left join fetch entity.users left join fetch entity.creator where entity.id = :id and entity.deleted is null ")
     Optional<GroupEntity> findGroupByIdAndFetchUsers(@Param("id") Long id);
 }

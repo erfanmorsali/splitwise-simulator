@@ -127,6 +127,29 @@ class GroupServiceImplTest {
     }
 
     @Test
+    void delete_groupNotFound_exception() {
+        when(groupRepository.findById(any())).thenReturn(Optional.empty());
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.delete(1L));
+        assertEquals(ErrorCodes.GROUP_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void delete_userIsNotOwnerOfGroup_exception() {
+        GroupEntity group = createGroup(1L, currentUserId + 1, new HashSet<>());
+        when(groupRepository.findById(any())).thenReturn(Optional.of(group));
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.delete(1L));
+        assertEquals(ErrorCodes.NOT_OWNER_OF_GROUP.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void delete_success() {
+        GroupEntity group = createGroup(1L, currentUserId, new HashSet<>());
+        when(groupRepository.findById(any())).thenReturn(Optional.of(group));
+        assertDoesNotThrow(() -> groupService.delete(1L));
+        verify(groupRepository).save(any());
+    }
+
+    @Test
     void inviteToGroup_groupNotFound_exception() {
         when(groupRepository.findById(any())).thenReturn(Optional.empty());
         GroupInviteRequest request = new GroupInviteRequest();

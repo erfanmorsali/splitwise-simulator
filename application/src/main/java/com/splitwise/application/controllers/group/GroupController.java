@@ -44,18 +44,23 @@ public class GroupController {
     }
 
     @PostMapping(Urls.GROUP_INVITE)
-    public void inviteToGroup(@PathVariable(value = "id") Long id, @Valid @RequestBody GroupInviteRequest request) {
-        service.inviteToGroup(id, request);
+    public ResponseEntity<Boolean> inviteToGroup(@PathVariable(value = "id") Long id, @Valid @RequestBody GroupInviteRequest request) {
+        return new ResponseEntity<>(service.inviteToGroup(id, request), HttpStatus.OK);
     }
 
     @PatchMapping(Urls.GROUP_INVITE_ACCEPT)
-    public void acceptInvite(@PathVariable(value = "id") Long id) {
-        service.acceptInvite(id);
+    public ResponseEntity<Boolean> acceptInvite(@PathVariable(value = "id") Long id) {
+        return new ResponseEntity<>(service.acceptInvite(id), HttpStatus.OK);
     }
 
     @PatchMapping(Urls.GROUP_INVITE_REJECT)
-    public void rejectInvite(@PathVariable(value = "id") Long id) {
-        service.rejectInvite(id);
+    public ResponseEntity<Boolean> rejectInvite(@PathVariable(value = "id") Long id) {
+        return new ResponseEntity<>(service.rejectInvite(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping(Urls.GROUP_ID)
+    public ResponseEntity<Boolean> delete(@PathVariable(value = "id") Long id) {
+        return new ResponseEntity<>(service.delete(id), HttpStatus.OK);
     }
 
 }
