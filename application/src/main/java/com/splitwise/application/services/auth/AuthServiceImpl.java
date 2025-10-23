@@ -4,6 +4,7 @@ import com.splitwise.application.models.dtos.auth.OtpRequest;
 import com.splitwise.application.models.dtos.auth.TokenResponse;
 import com.splitwise.application.models.dtos.auth.VerifyOtpRequest;
 import com.splitwise.application.models.entities.user.UserEntity;
+import com.splitwise.application.security.JwtService;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.application.utils.OtpService;
 import com.splitwise.shared.objects.ErrorCodes;
@@ -21,6 +22,8 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final OtpService otpService;
+    private final JwtService jwtService;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -52,12 +55,11 @@ public class AuthServiceImpl implements AuthService {
         UserEntity user = userService.findByMobile(request.getMobile())
                 .orElseThrow(() -> new SystemException(StausCodes.BAD_REQUEST, ErrorCodes.USER_NOT_FOUND, "Invalid mobile"));
 
-        boolean isValid = otpService.validateOtp(user.getMobile(), request.getMobile());
+        boolean isValid = otpService.validateOtp(user.getMobile(), request.getCode());
         if (!isValid) {
             throw new SystemException(StausCodes.BAD_REQUEST, ErrorCodes.INVALID_OTP, "Invalid OTP");
         }
 
-        // generate Jwt Token
-        return new TokenResponse();
+        return jwtService.create(user.getId());
     }
 }

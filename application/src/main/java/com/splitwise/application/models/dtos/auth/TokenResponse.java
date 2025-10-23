@@ -13,5 +13,7 @@ import java.time.LocalDateTime;
 public class TokenResponse {
     private String accessToken;
     private String refreshToken;
+    private Long ttl;
+    private Long refreshTtl;
     private LocalDateTime creationTime = LocalDateTime.now();
 }
