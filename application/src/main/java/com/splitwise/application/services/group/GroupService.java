@@ -3,6 +3,7 @@ package com.splitwise.application.services.group;
 import com.splitwise.application.controllers.group.GroupFilter;
 import com.splitwise.application.models.dtos.group.CreateGroupRequest;
 import com.splitwise.application.models.dtos.group.EditGroupRequest;
+import com.splitwise.application.models.dtos.group.GroupInviteRequest;
 import com.splitwise.application.models.dtos.group.GroupResponse;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public interface GroupService {
     GroupResponse create(CreateGroupRequest request);
 
     GroupResponse update(Long id, EditGroupRequest request);
+
+    void inviteToGroup(Long id, GroupInviteRequest request);
 
     boolean acceptInvite(Long groupId);
 

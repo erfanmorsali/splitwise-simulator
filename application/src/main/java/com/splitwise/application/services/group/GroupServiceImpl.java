@@ -4,6 +4,7 @@ package com.splitwise.application.services.group;
 import com.splitwise.application.controllers.group.GroupFilter;
 import com.splitwise.application.models.dtos.group.CreateGroupRequest;
 import com.splitwise.application.models.dtos.group.EditGroupRequest;
+import com.splitwise.application.models.dtos.group.GroupInviteRequest;
 import com.splitwise.application.models.dtos.group.GroupResponse;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.group.GroupInviteEntity;
@@ -61,6 +62,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public GroupResponse update(Long id, EditGroupRequest request) {
         GroupEntity group = findByIdOrThrowException(id);
         checkGroupBelongsToUser(group);
@@ -71,6 +73,12 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public void inviteToGroup(Long id, GroupInviteRequest request) {
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean acceptInvite(Long groupId) {
         Long userId = JwtUser.getAuthenticatedUser().getId();
 
@@ -90,7 +98,17 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean rejectInvite(Long groupId) {
+        Long userId = JwtUser.getAuthenticatedUser().getId();
+
+        GroupInviteEntity invite = findPendingInvite(userId, groupId);
+        invite.setAccepted(false);
+
+        findByIdOrThrowException(groupId);
+        groupInviteRepository.save(invite);
+        // TODO : send notif
+        // TODO : check tests after sending notif
         return false;
     }
 
