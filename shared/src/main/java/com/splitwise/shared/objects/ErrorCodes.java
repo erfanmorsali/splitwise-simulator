@@ -16,6 +16,10 @@ public enum ErrorCodes {
     TOKEN_EXPIRED(22, "Token Expired"),
     ACCESS_DENIED(23, "Access Denied"),
 
+    // Group
+    GROUP_NOT_FOUND(40, "Group Not Found"),
+    NOT_MEMBER_OF_GROUP(41, "User Is Not Member Of This Group"),
+
 
     // General
     VALIDATION_EXCEPTION(5050, "Validation Exception");

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface GroupService {
     List<GroupResponse> getAll(GroupFilter filter);
+    GroupResponse getById(Long id);
 }
