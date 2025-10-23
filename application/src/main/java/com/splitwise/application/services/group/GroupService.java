@@ -9,7 +9,14 @@ import java.util.List;
 
 public interface GroupService {
     List<GroupResponse> getAll(GroupFilter filter);
+
     GroupResponse getById(Long id);
+
     GroupResponse create(CreateGroupRequest request);
+
     GroupResponse update(Long id, EditGroupRequest request);
+
+    boolean acceptInvite(Long groupId);
+
+    boolean rejectInvite(Long groupId);
 }

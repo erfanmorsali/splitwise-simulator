@@ -7,6 +7,7 @@ import com.splitwise.application.models.dtos.group.EditGroupRequest;
 import com.splitwise.application.models.dtos.group.GroupResponse;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
+import com.splitwise.application.repositories.group.GroupInviteRepository;
 import com.splitwise.application.repositories.group.GroupRepository;
 import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.user.UserService;
@@ -26,6 +27,7 @@ public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
     private final UserService userService;
+    private final GroupInviteRepository groupInviteRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -65,6 +67,16 @@ public class GroupServiceImpl implements GroupService {
         request.convertToEntity(group);
         GroupEntity entity = groupRepository.save(group);
         return new GroupResponse(entity);
+    }
+
+    @Override
+    public boolean acceptInvite(Long groupId) {
+        return false;
+    }
+
+    @Override
+    public boolean rejectInvite(Long groupId) {
+        return false;
     }
 
 
