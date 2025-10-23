@@ -19,6 +19,7 @@ public enum ErrorCodes {
     // Group
     GROUP_NOT_FOUND(40, "Group Not Found"),
     NOT_MEMBER_OF_GROUP(41, "User Is Not Member Of This Group"),
+    NOT_OWNER_OF_GROUP(42, "User Is Not Owner Of This Group"),
 
 
     // General

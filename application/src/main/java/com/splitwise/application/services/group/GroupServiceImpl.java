@@ -2,10 +2,11 @@ package com.splitwise.application.services.group;
 
 
 import com.splitwise.application.controllers.group.GroupFilter;
+import com.splitwise.application.models.dtos.group.CreateGroupRequest;
+import com.splitwise.application.models.dtos.group.EditGroupRequest;
+import com.splitwise.application.models.dtos.group.GroupResponse;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
-import com.splitwise.application.models.group.CreateGroupRequest;
-import com.splitwise.application.models.group.GroupResponse;
 import com.splitwise.application.repositories.group.GroupRepository;
 import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.user.UserService;
@@ -56,6 +57,16 @@ public class GroupServiceImpl implements GroupService {
         return new GroupResponse(entity);
     }
 
+    @Override
+    public GroupResponse update(Long id, EditGroupRequest request) {
+        GroupEntity group = findByIdOrThrowException(id);
+        checkGroupBelongsToUser(group);
+
+        request.convertToEntity(group);
+        GroupEntity entity = groupRepository.save(group);
+        return new GroupResponse(entity);
+    }
+
 
     private GroupEntity findByIdAndFetchUsersOrThrowException(Long id) {
         return findGroupByIdAndFetchUsers(id)
@@ -64,6 +75,11 @@ public class GroupServiceImpl implements GroupService {
 
     private Optional<GroupEntity> findGroupByIdAndFetchUsers(Long id) {
         return groupRepository.findGroupByIdAndFetchUsers(id);
+    }
+
+    private GroupEntity findByIdOrThrowException(Long id) {
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.GROUP_NOT_FOUND, id));
     }
 
     private void checkUserIsMemberOfGroup(GroupEntity group) {
@@ -77,5 +93,13 @@ public class GroupServiceImpl implements GroupService {
     private UserEntity findUserByIdOrThrowException(Long userId, Object argument) {
         return userService.findById(userId)
                 .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, argument));
+    }
+
+    private void checkGroupBelongsToUser(GroupEntity group) {
+        Long userId = JwtUser.getAuthenticatedUser().getId();
+
+        if (!userId.equals(group.getCreatorId())) {
+            throw new SystemException(StatusCodes.ACCESS_DENIED, ErrorCodes.NOT_OWNER_OF_GROUP, group.getId());
+        }
     }
 }
