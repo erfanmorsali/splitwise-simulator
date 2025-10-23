@@ -6,4 +6,6 @@ public abstract class Urls {
     public static final String VERIFY_OTP = "verify-otp";
     public static final String REFRESH = "refresh";
 
+    // Group Controller
+    public static final String GROUP = "group";
 }

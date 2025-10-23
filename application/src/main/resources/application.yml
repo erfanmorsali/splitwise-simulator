@@ -45,6 +45,8 @@ otp:
 rest:
   auth:
     /auth/
+  idn:
+    /idn/
 
 jwt:
   token:
