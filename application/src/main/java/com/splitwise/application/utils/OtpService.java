@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class OtpService {
 
     public OtpResponse generateOtp(String key) {
-        return null;
+        return new OtpResponse();
     }
 
 
