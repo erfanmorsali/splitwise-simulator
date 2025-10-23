@@ -41,3 +41,7 @@ spring:
 otp:
   duration:
     120
+
+rest:
+  auth:
+    /auth/

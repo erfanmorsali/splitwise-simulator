@@ -1,0 +1,28 @@
+package com.splitwise.application.controllers.auth;
+
+
+import com.splitwise.application.models.dtos.auth.OtpRequest;
+import com.splitwise.application.services.auth.AuthService;
+import com.splitwise.application.statics.Urls;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("${rest.auth}")
+@RequiredArgsConstructor
+public class AuthController {
+    private final AuthService service;
+
+
+    @PostMapping(Urls.REQUEST_OTP)
+    public ResponseEntity<Boolean> requestOtp(@Valid @RequestBody OtpRequest request) {
+        return new ResponseEntity<>(service.requestOtp(request), HttpStatus.OK);
+    }
+
+}
