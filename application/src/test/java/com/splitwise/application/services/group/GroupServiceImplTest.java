@@ -2,6 +2,7 @@ package com.splitwise.application.services.group;
 
 import com.splitwise.application.models.dtos.auth.UserContextDto;
 import com.splitwise.application.models.dtos.group.CreateGroupRequest;
+import com.splitwise.application.models.dtos.group.EditGroupRequest;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.repositories.group.GroupRepository;
@@ -86,12 +87,37 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void create_userFound_success() {
+    void create_success() {
         when(userService.findById(currentUserId)).thenReturn(Optional.of(createUser(currentUserId)));
         CreateGroupRequest request = createGroupRequest();
         assertDoesNotThrow(() -> groupService.create(request));
         verify(groupRepository).save(any());
+    }
 
+    @Test
+    void update_groupNotFound_exception() {
+        when(groupRepository.findById(any())).thenReturn(Optional.empty());
+        EditGroupRequest request = new EditGroupRequest();
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.update(1L, request));
+        assertEquals(ErrorCodes.GROUP_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void update_userIsNotOwnerOfGroup_exception() {
+        GroupEntity group = createGroup(1L, currentUserId + 1, new HashSet<>());
+        when(groupRepository.findById(any())).thenReturn(Optional.of(group));
+        EditGroupRequest request = new EditGroupRequest();
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.update(1L, request));
+        assertEquals(ErrorCodes.NOT_OWNER_OF_GROUP.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void update_success() {
+        GroupEntity group = createGroup(1L, currentUserId, new HashSet<>());
+        when(groupRepository.findById(any())).thenReturn(Optional.of(group));
+        EditGroupRequest request = new EditGroupRequest();
+        assertDoesNotThrow(() -> groupService.update(1L, request));
+        verify(groupRepository).save(any());
     }
 
 
