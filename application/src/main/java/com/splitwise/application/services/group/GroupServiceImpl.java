@@ -45,7 +45,15 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public GroupResponse create(CreateGroupRequest request) {
-        return new GroupResponse();
+        Long userId = JwtUser.getAuthenticatedUser().getId();
+        UserEntity user = findUserByIdOrThrowException(userId, "user not found");
+
+        GroupEntity newEntity = request.convertToEntity(null);
+        newEntity.setCreatorId(userId);
+        newEntity.getUsers().add(user);
+
+        GroupEntity entity = groupRepository.save(newEntity);
+        return new GroupResponse(entity);
     }
 
 
