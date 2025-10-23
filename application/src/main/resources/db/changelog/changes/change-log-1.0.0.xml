@@ -22,5 +22,45 @@
             create sequence splitwise.users_sequence start with 1 increment by 50;
         </sql>
     </changeSet>
+    <changeSet id="create-group-table" author="erfan" failOnError="true">
+        <sql>
+            create table splitwise.groups
+            (
+                id_pk         bigint       not null,
+                created       timestamp(6),
+                deleted       timestamp(6),
+                updated       timestamp(6),
+                creator_id_fk bigint,
+                description   varchar(100) not null,
+                name          varchar(50)  not null,
+                primary key (id_pk)
+            );
+
+            create sequence splitwise.groups_sequence start with 1 increment by 50;
+
+            alter table if exists splitwise.groups
+                add constraint FK5llh2oxwb9l473bh1v1nrvjje
+                foreign key (creator_id_fk)
+                references splitwise.users;
+
+
+            create table splitwise.user_group
+            (
+                group_id_fk bigint not null,
+                user_id_fk  bigint not null,
+                primary key (group_id_fk, user_id_fk)
+            );
+
+            alter table if exists splitwise.user_group
+                add constraint FK9n9in7sor101yij5ue03jyh7f
+                foreign key (user_id_fk)
+                references splitwise.users;
+
+            alter table if exists splitwise.user_group
+                add constraint FK4ejcgd5ytm6grsljumynkt06l
+                foreign key (group_id_fk)
+                references splitwise.groups;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
 
