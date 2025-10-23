@@ -39,6 +39,13 @@ public class OtpService {
     }
 
     public boolean validateOtp(String key, String inputCode) {
+        String redisKey = redisTemplate.opsForValue().get(key);
+
+        if (redisKey != null && redisKey.equals(inputCode)) {
+            redisTemplate.delete(key);
+            return true;
+        }
+
         return false;
     }
 
