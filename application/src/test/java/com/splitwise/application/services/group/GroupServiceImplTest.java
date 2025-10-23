@@ -3,7 +3,9 @@ package com.splitwise.application.services.group;
 import com.splitwise.application.models.dtos.auth.UserContextDto;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
+import com.splitwise.application.models.group.CreateGroupRequest;
 import com.splitwise.application.repositories.group.GroupRepository;
+import com.splitwise.application.services.user.UserService;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.SystemException;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -27,6 +31,8 @@ class GroupServiceImplTest {
 
     @Mock
     private GroupRepository groupRepository;
+    @Mock
+    private UserService userService;
     @InjectMocks
     private GroupServiceImpl groupService;
 
@@ -71,6 +77,23 @@ class GroupServiceImplTest {
         assertDoesNotThrow(() -> groupService.getById(1L));
     }
 
+    @Test
+    void create_userNotFound_exception() {
+        when(userService.findById(currentUserId)).thenReturn(Optional.empty());
+        CreateGroupRequest request = createGroupRequest();
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.create(request));
+        assertEquals(ErrorCodes.USER_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void create_userFound_success() {
+        when(userService.findById(currentUserId)).thenReturn(Optional.of(createUser(currentUserId)));
+        CreateGroupRequest request = createGroupRequest();
+        assertDoesNotThrow(() -> groupService.create(request));
+        verify(groupRepository).save(any());
+
+    }
+
 
     private UserEntity createUser(Long id) {
         UserEntity user = new UserEntity();
@@ -90,5 +113,12 @@ class GroupServiceImplTest {
         UserEntity creator = createUser(creatorId);
         group.setCreator(creator);
         return group;
+    }
+
+    private CreateGroupRequest createGroupRequest() {
+        CreateGroupRequest request = new CreateGroupRequest();
+        request.setName("test");
+        request.setDescription("test description");
+        return request;
     }
 }
