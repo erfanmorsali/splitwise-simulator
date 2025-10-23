@@ -2,6 +2,10 @@ package com.splitwise.application.security;
 
 import com.splitwise.application.models.dtos.auth.JwtTokenType;
 import com.splitwise.application.models.dtos.auth.TokenResponse;
+import com.splitwise.shared.objects.ErrorCodes;
+import com.splitwise.shared.objects.StausCodes;
+import com.splitwise.shared.objects.SystemException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -14,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class JwtService {
@@ -41,6 +46,12 @@ public class JwtService {
                 .build();
     }
 
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver, JwtTokenType type) {
+        final Claims claims = extractAllClaims(token, type);
+        return claimsResolver.apply(claims);
+    }
+
+
     private String buildToken(Map<String, Object> claims, Long userId, Long expiration, JwtTokenType type) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -56,5 +67,23 @@ public class JwtService {
 
         byte[] keyBytes = Decoders.BASE64.decode(tokenSecret);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+
+
+    private Claims extractAllClaims(String token, JwtTokenType type) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSignKey(type))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            throw new SystemException(StausCodes.BAD_REQUEST, ErrorCodes.INVALID_TOKEN, "invalid token");
+        }
+    }
+
+    public String extractUserId(String token, JwtTokenType type) {
+        return extractClaim(token, Claims::getSubject, type);
     }
 }

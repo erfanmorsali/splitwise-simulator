@@ -9,12 +9,13 @@ public enum ErrorCodes {
     USER_NOT_FOUND(1, "User Not Found"),
 
 
-    // Otp
+    // Security
     INVALID_OTP(20, "Invalid OTP"),
+    INVALID_TOKEN(21, "Invalid Token"),
 
 
     // General
-    VALIDATION_EXCEPTION(5050, "Validation Exception"),;
+    VALIDATION_EXCEPTION(5050, "Validation Exception");
 
     private final Integer code;
     private final String message;
