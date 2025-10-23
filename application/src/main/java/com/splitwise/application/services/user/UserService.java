@@ -9,4 +9,5 @@ public interface UserService {
     Optional<UserEntity> findByMobile(String mobile);
 
     UserEntity save(UserEntity entity);
+    Optional<UserEntity> findById(Long id);
 }
