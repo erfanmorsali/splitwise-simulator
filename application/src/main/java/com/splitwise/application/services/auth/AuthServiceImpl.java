@@ -1,6 +1,8 @@
 package com.splitwise.application.services.auth;
 
 import com.splitwise.application.models.dtos.auth.OtpRequest;
+import com.splitwise.application.models.dtos.auth.TokenResponse;
+import com.splitwise.application.models.dtos.auth.VerifyOtpRequest;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.application.utils.OtpService;
@@ -40,5 +42,10 @@ public class AuthServiceImpl implements AuthService {
         // send sms
         System.out.println(otpResponse.getCode());
         return true;
+    }
+
+    public TokenResponse verifyOtp(VerifyOtpRequest request) {
+        // implement Logic
+        return new TokenResponse();
     }
 }
