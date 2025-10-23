@@ -126,14 +126,14 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void accept_inviteNotFound_exception() {
+    void acceptInvite_inviteNotFound_exception() {
         when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.empty());
         SystemException ex = assertThrows(SystemException.class, () -> groupService.acceptInvite(1L));
         assertEquals(ErrorCodes.GROUP_INVITE_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
     }
 
     @Test
-    void accept_inviteIsAcceptedAlready_exception() {
+    void acceptInvite_inviteIsAcceptedOrRejectedAlready_exception() {
         GroupInviteEntity invite = createGroupInvite();
         when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
         SystemException ex = assertThrows(SystemException.class, () -> groupService.acceptInvite(1L));
@@ -141,7 +141,7 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void accept_groupNotFound_exception() {
+    void acceptInvite_groupNotFound_exception() {
         GroupInviteEntity invite = createGroupInvite();
         invite.setAccepted(null);
         when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
@@ -151,7 +151,7 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void accept_userNotFound_exception() {
+    void acceptInvite_userNotFound_exception() {
         GroupInviteEntity invite = createGroupInvite();
         invite.setAccepted(null);
         when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
@@ -162,7 +162,7 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void accept_success() {
+    void acceptInvite_success() {
         GroupInviteEntity invite = createGroupInvite();
         invite.setAccepted(null);
         when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
@@ -173,6 +173,40 @@ class GroupServiceImplTest {
         verify(groupInviteRepository).save(any());
     }
 
+    @Test
+    void rejectInvite_inviteNotFound_exception() {
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.empty());
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.rejectInvite(1L));
+        assertEquals(ErrorCodes.GROUP_INVITE_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void rejectInvite_inviteIsAcceptedOrRejectedAlready_exception() {
+        GroupInviteEntity invite = createGroupInvite();
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.rejectInvite(1L));
+        assertEquals(ErrorCodes.GROUP_INVITE_NOT_CHANGEABLE.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void rejectInvite_groupNotFound_exception() {
+        GroupInviteEntity invite = createGroupInvite();
+        invite.setAccepted(null);
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        when(groupRepository.findById(any())).thenReturn(Optional.empty());
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.rejectInvite(1L));
+        assertEquals(ErrorCodes.GROUP_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void rejectInvite_success() {
+        GroupInviteEntity invite = createGroupInvite();
+        invite.setAccepted(null);
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        when(groupRepository.findById(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
+        assertDoesNotThrow(() -> groupService.rejectInvite(1L));
+        verify(groupInviteRepository).save(any());
+    }
 
     private UserEntity createUser(Long id) {
         UserEntity user = new UserEntity();
