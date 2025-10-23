@@ -2,6 +2,8 @@ package com.splitwise.application.controllers.auth;
 
 
 import com.splitwise.application.models.dtos.auth.OtpRequest;
+import com.splitwise.application.models.dtos.auth.TokenResponse;
+import com.splitwise.application.models.dtos.auth.VerifyOtpRequest;
 import com.splitwise.application.services.auth.AuthService;
 import com.splitwise.application.statics.Urls;
 import jakarta.validation.Valid;
@@ -23,6 +25,11 @@ public class AuthController {
     @PostMapping(Urls.REQUEST_OTP)
     public ResponseEntity<Boolean> requestOtp(@Valid @RequestBody OtpRequest request) {
         return new ResponseEntity<>(service.requestOtp(request), HttpStatus.OK);
+    }
+
+    @PostMapping(Urls.VERIFY_OTP)
+    public ResponseEntity<TokenResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        return new ResponseEntity<>(service.verifyOtp(request), HttpStatus.OK);
     }
 
 }
