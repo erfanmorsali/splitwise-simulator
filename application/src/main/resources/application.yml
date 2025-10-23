@@ -1,0 +1,39 @@
+server:
+  port: 7005
+  servlet:
+    context-path: /api/v1
+
+
+logging:
+  level:
+    org:
+      springframework:
+        web: trace
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              basicBinder: trace
+        sql: trace
+        orm:
+          jdbc:
+            bind: trace
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5435/splitwise?currentSchema=splitwise
+    username: splitwise
+    password: splitwise
+
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/changelog-master.xml
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: splitwise
+    show-sql: true
