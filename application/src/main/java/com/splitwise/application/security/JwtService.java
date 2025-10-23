@@ -46,6 +46,40 @@ public class JwtService {
                 .build();
     }
 
+    public TokenResponse refresh(String token) {
+        validateToken(token, JwtTokenType.REFRESH_TOKEN);
+        String userId = extractUserId(token, JwtTokenType.REFRESH_TOKEN);
+
+        Map<String, Object> claims = new HashMap<>();
+        String accessToken = buildToken(claims, Long.valueOf(userId), accessTokenExpiration, JwtTokenType.ACCESS_TOKEN);
+        String refreshToken = buildToken(claims, Long.valueOf(userId), refreshTokenExpiration, JwtTokenType.REFRESH_TOKEN);
+        return TokenResponse
+                .builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .ttl(accessTokenExpiration)
+                .refreshTtl(refreshTokenExpiration)
+                .creationTime(LocalDateTime.now())
+                .build();
+    }
+
+    public void validateToken(String token, JwtTokenType type) {
+        Boolean expired = isTokenExpired(token, type);
+        if (expired) {
+            throw new SystemException(StausCodes.ACCESS_DENIED, ErrorCodes.TOKEN_EXPIRED, "token expired");
+        }
+    }
+
+
+    public String extractUserId(String token, JwtTokenType type) {
+        return extractClaim(token, Claims::getSubject, type);
+    }
+
+
+    public Date extractExpiration(String token, JwtTokenType type) {
+        return extractClaim(token, Claims::getExpiration, type);
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver, JwtTokenType type) {
         final Claims claims = extractAllClaims(token, type);
         return claimsResolver.apply(claims);
@@ -70,7 +104,6 @@ public class JwtService {
     }
 
 
-
     private Claims extractAllClaims(String token, JwtTokenType type) {
         try {
             return Jwts.parserBuilder()
@@ -83,7 +116,8 @@ public class JwtService {
         }
     }
 
-    public String extractUserId(String token, JwtTokenType type) {
-        return extractClaim(token, Claims::getSubject, type);
+    private Boolean isTokenExpired(String token, JwtTokenType type) {
+        return extractExpiration(token, type).before(new Date());
     }
+
 }

@@ -12,6 +12,7 @@ public enum ErrorCodes {
     // Security
     INVALID_OTP(20, "Invalid OTP"),
     INVALID_TOKEN(21, "Invalid Token"),
+    TOKEN_EXPIRED(22, "Token Expired"),
 
 
     // General
