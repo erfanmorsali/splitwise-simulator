@@ -3,6 +3,7 @@ package com.splitwise.application.services.group;
 import com.splitwise.application.models.dtos.auth.UserContextDto;
 import com.splitwise.application.models.dtos.group.CreateGroupRequest;
 import com.splitwise.application.models.dtos.group.EditGroupRequest;
+import com.splitwise.application.models.dtos.group.GroupInviteRequest;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.group.GroupInviteEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
@@ -126,6 +127,65 @@ class GroupServiceImplTest {
     }
 
     @Test
+    void inviteToGroup_groupNotFound_exception() {
+        when(groupRepository.findById(any())).thenReturn(Optional.empty());
+        GroupInviteRequest request = new GroupInviteRequest();
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.inviteToGroup(1L, request));
+        assertEquals(ErrorCodes.GROUP_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void inviteToGroup_groupNotBelongToUser_exception() {
+        when(groupRepository.findById(any())).thenReturn(Optional.of(createGroup(1L, currentUserId + 1, new HashSet<>())));
+        GroupInviteRequest request = new GroupInviteRequest();
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.inviteToGroup(1L, request));
+        assertEquals(ErrorCodes.NOT_OWNER_OF_GROUP.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void inviteToGroup_userNotFound_exception() {
+        when(groupRepository.findById(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
+        when(userService.findById(any())).thenReturn(Optional.empty());
+        GroupInviteRequest request = new GroupInviteRequest();
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.inviteToGroup(1L, request));
+        assertEquals(ErrorCodes.USER_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void inviteToGroup_inviteFoundButNotAcceptedOrRejected_exception() {
+        GroupInviteEntity invite = createGroupInvite();
+        invite.setAccepted(null);
+        when(groupRepository.findById(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
+        when(userService.findById(any())).thenReturn(Optional.of(createUser(currentUserId)));
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        GroupInviteRequest request = new GroupInviteRequest();
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.inviteToGroup(1L, request));
+        assertEquals(ErrorCodes.USER_ALREADY_INVITED_TO_GROUP.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void inviteToGroup_inviteFoundAndAcceptedAlready_exception() {
+        GroupInviteEntity invite = createGroupInvite();
+        invite.setAccepted(true);
+        when(groupRepository.findById(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
+        when(userService.findById(any())).thenReturn(Optional.of(createUser(currentUserId)));
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        GroupInviteRequest request = new GroupInviteRequest();
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.inviteToGroup(1L, request));
+        assertEquals(ErrorCodes.USER_ALREADY_MEMBER_OF_GROUP.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void inviteToGroup_success() {
+        when(groupRepository.findById(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
+        when(userService.findById(any())).thenReturn(Optional.of(createUser(currentUserId)));
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.empty());
+        GroupInviteRequest request = new GroupInviteRequest();
+        assertDoesNotThrow(() -> groupService.inviteToGroup(1L, request));
+        verify(groupInviteRepository).save(any());
+    }
+
+    @Test
     void acceptInvite_inviteNotFound_exception() {
         when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.empty());
         SystemException ex = assertThrows(SystemException.class, () -> groupService.acceptInvite(1L));
@@ -207,6 +267,7 @@ class GroupServiceImplTest {
         assertDoesNotThrow(() -> groupService.rejectInvite(1L));
         verify(groupInviteRepository).save(any());
     }
+
 
     private UserEntity createUser(Long id) {
         UserEntity user = new UserEntity();
