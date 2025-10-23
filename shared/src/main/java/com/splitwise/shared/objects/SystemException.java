@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SystemException extends RuntimeException {
-    private final SystemError error;
+    private final StausCodes statusCode;
+    private final ErrorCodes errorCode;
     private final Object argument;
 }
