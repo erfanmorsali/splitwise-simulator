@@ -42,4 +42,9 @@ public class GroupController {
         return new ResponseEntity<>(service.update(id, request), HttpStatus.OK);
     }
 
+    @PatchMapping(Urls.GROUP_INVITE_ACCEPT)
+    public void acceptInvite(@PathVariable(value = "id") Long id) {
+        service.acceptInvite(id);
+    }
+
 }

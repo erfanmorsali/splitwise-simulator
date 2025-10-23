@@ -4,7 +4,9 @@ import com.splitwise.application.models.dtos.auth.UserContextDto;
 import com.splitwise.application.models.dtos.group.CreateGroupRequest;
 import com.splitwise.application.models.dtos.group.EditGroupRequest;
 import com.splitwise.application.models.entities.group.GroupEntity;
+import com.splitwise.application.models.entities.group.GroupInviteEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
+import com.splitwise.application.repositories.group.GroupInviteRepository;
 import com.splitwise.application.repositories.group.GroupRepository;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.shared.objects.ErrorCodes;
@@ -34,6 +36,9 @@ class GroupServiceImplTest {
     private GroupRepository groupRepository;
     @Mock
     private UserService userService;
+    @Mock
+    private GroupInviteRepository groupInviteRepository;
+
     @InjectMocks
     private GroupServiceImpl groupService;
 
@@ -120,6 +125,54 @@ class GroupServiceImplTest {
         verify(groupRepository).save(any());
     }
 
+    @Test
+    void accept_inviteNotFound_exception() {
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.empty());
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.acceptInvite(1L));
+        assertEquals(ErrorCodes.GROUP_INVITE_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void accept_inviteIsAcceptedAlready_exception() {
+        GroupInviteEntity invite = createGroupInvite();
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.acceptInvite(1L));
+        assertEquals(ErrorCodes.GROUP_INVITE_NOT_CHANGEABLE.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void accept_groupNotFound_exception() {
+        GroupInviteEntity invite = createGroupInvite();
+        invite.setAccepted(null);
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        when(groupRepository.findGroupByIdAndFetchUsers(any())).thenReturn(Optional.empty());
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.acceptInvite(1L));
+        assertEquals(ErrorCodes.GROUP_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void accept_userNotFound_exception() {
+        GroupInviteEntity invite = createGroupInvite();
+        invite.setAccepted(null);
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        when(groupRepository.findGroupByIdAndFetchUsers(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
+        when(userService.findById(any())).thenReturn(Optional.empty());
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.acceptInvite(1L));
+        assertEquals(ErrorCodes.USER_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void accept_success() {
+        GroupInviteEntity invite = createGroupInvite();
+        invite.setAccepted(null);
+        when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
+        when(groupRepository.findGroupByIdAndFetchUsers(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
+        when(userService.findById(any())).thenReturn(Optional.of(createUser(currentUserId)));
+        assertDoesNotThrow(() -> groupService.acceptInvite(1L));
+        verify(groupRepository).save(any());
+        verify(groupInviteRepository).save(any());
+    }
+
 
     private UserEntity createUser(Long id) {
         UserEntity user = new UserEntity();
@@ -146,5 +199,11 @@ class GroupServiceImplTest {
         request.setName("test");
         request.setDescription("test description");
         return request;
+    }
+
+    private GroupInviteEntity createGroupInvite() {
+        GroupInviteEntity invite = new GroupInviteEntity();
+        invite.setAccepted(true);
+        return invite;
     }
 }
