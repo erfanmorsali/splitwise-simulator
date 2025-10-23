@@ -6,7 +6,7 @@ import com.splitwise.application.security.JwtService;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.application.utils.OtpService;
 import com.splitwise.shared.objects.ErrorCodes;
-import com.splitwise.shared.objects.StausCodes;
+import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,11 +51,11 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public TokenResponse verifyOtp(VerifyOtpRequest request) {
         UserEntity user = userService.findByMobile(request.getMobile())
-                .orElseThrow(() -> new SystemException(StausCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, "Invalid mobile"));
+                .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, "Invalid mobile"));
 
         boolean isValid = otpService.validateOtp(user.getMobile(), request.getCode());
         if (!isValid) {
-            throw new SystemException(StausCodes.BAD_REQUEST, ErrorCodes.INVALID_OTP, "Invalid OTP");
+            throw new SystemException(StatusCodes.BAD_REQUEST, ErrorCodes.INVALID_OTP, "Invalid OTP");
         }
 
         return jwtService.create(user.getId());
@@ -67,10 +67,10 @@ public class AuthServiceImpl implements AuthService {
         String userId = jwtService.extractUserId(request.getRefreshToken(), JwtTokenType.REFRESH_TOKEN);
 
         UserEntity user = userService.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new SystemException(StausCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, "User not found"));
 
         if (user.isSuspended()) {
-            throw new SystemException(StausCodes.FORBIDDEN, ErrorCodes.USER_SUSPENDED, "user is suspended");
+            throw new SystemException(StatusCodes.FORBIDDEN, ErrorCodes.USER_SUSPENDED, "user is suspended");
         }
 
         return jwtService.refresh(request.getRefreshToken());

@@ -3,7 +3,7 @@ package com.splitwise.application.security;
 import com.splitwise.application.models.dtos.auth.JwtTokenType;
 import com.splitwise.application.models.dtos.auth.TokenResponse;
 import com.splitwise.shared.objects.ErrorCodes;
-import com.splitwise.shared.objects.StausCodes;
+import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -66,7 +66,7 @@ public class JwtService {
     public void validateToken(String token, JwtTokenType type) {
         Boolean expired = isTokenExpired(token, type);
         if (expired) {
-            throw new SystemException(StausCodes.ACCESS_DENIED, ErrorCodes.TOKEN_EXPIRED, "token expired");
+            throw new SystemException(StatusCodes.ACCESS_DENIED, ErrorCodes.TOKEN_EXPIRED, "token expired");
         }
     }
 
@@ -112,7 +112,7 @@ public class JwtService {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            throw new SystemException(StausCodes.BAD_REQUEST, ErrorCodes.INVALID_TOKEN, "invalid token");
+            throw new SystemException(StatusCodes.BAD_REQUEST, ErrorCodes.INVALID_TOKEN, "invalid token");
         }
     }
 

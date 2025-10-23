@@ -16,7 +16,7 @@ public class ErrorResult {
     private Object data;
 
 
-    public ErrorResult(StausCodes error, Integer errorCode, Object data) {
+    public ErrorResult(StatusCodes error, Integer errorCode, Object data) {
         this.errorCode = errorCode;
         this.data = data;
         this.status = error.getCode();

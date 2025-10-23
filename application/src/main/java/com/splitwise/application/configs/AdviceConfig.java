@@ -2,7 +2,7 @@ package com.splitwise.application.configs;
 
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.ErrorResult;
-import com.splitwise.shared.objects.StausCodes;
+import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.validation.FieldError;
@@ -31,10 +31,10 @@ public class AdviceConfig {
 
             data.put("fieldName", ((FieldError) error).getField());
             data.put("errorMessage", error.getDefaultMessage());
-            validations.add(new ErrorResult(StausCodes.VALIDATION_EXCEPTION, ErrorCodes.VALIDATION_EXCEPTION.getCode(), data));
+            validations.add(new ErrorResult(StatusCodes.VALIDATION_EXCEPTION, ErrorCodes.VALIDATION_EXCEPTION.getCode(), data));
         });
 
-        response.setStatus(StausCodes.VALIDATION_EXCEPTION.getCode());
+        response.setStatus(StatusCodes.VALIDATION_EXCEPTION.getCode());
         return validations;
     }
 }

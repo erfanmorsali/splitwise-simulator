@@ -4,7 +4,7 @@ package com.splitwise.shared.objects;
 import lombok.Getter;
 
 @Getter
-public enum StausCodes {
+public enum StatusCodes {
     // General
     VALIDATION_EXCEPTION(400),
     BAD_REQUEST(400),
@@ -15,7 +15,7 @@ public enum StausCodes {
     private final Integer code;
 
 
-    StausCodes(Integer code) {
+    StatusCodes(Integer code) {
         this.code = code;
     }
 
