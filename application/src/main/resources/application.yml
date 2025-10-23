@@ -1,5 +1,5 @@
 server:
-  port: 7005
+  port: 7000
   servlet:
     context-path: /api/v1
 
@@ -37,3 +37,7 @@ spring:
         format_sql: true
         default_schema: splitwise
     show-sql: true
+
+otp:
+  duration:
+    120
