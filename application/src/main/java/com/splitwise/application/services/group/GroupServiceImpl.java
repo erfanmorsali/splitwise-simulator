@@ -6,6 +6,7 @@ import com.splitwise.application.models.dtos.group.CreateGroupRequest;
 import com.splitwise.application.models.dtos.group.EditGroupRequest;
 import com.splitwise.application.models.dtos.group.GroupResponse;
 import com.splitwise.application.models.entities.group.GroupEntity;
+import com.splitwise.application.models.entities.group.GroupInviteEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.repositories.group.GroupInviteRepository;
 import com.splitwise.application.repositories.group.GroupRepository;
@@ -49,7 +50,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(rollbackFor = Exception.class)
     public GroupResponse create(CreateGroupRequest request) {
         Long userId = JwtUser.getAuthenticatedUser().getId();
-        UserEntity user = findUserByIdOrThrowException(userId, "user not found");
+        UserEntity user = findUserByIdOrThrowException(userId);
 
         GroupEntity newEntity = request.convertToEntity(null);
         newEntity.setCreatorId(userId);
@@ -71,7 +72,21 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public boolean acceptInvite(Long groupId) {
-        return false;
+        Long userId = JwtUser.getAuthenticatedUser().getId();
+
+        GroupInviteEntity invite = findPendingInvite(userId, groupId);
+        invite.setAccepted(true);
+
+        GroupEntity group = findByIdAndFetchUsersOrThrowException(groupId);
+        UserEntity user = findUserByIdOrThrowException(userId);
+        group.getUsers().add(user);
+
+        groupInviteRepository.save(invite);
+        groupRepository.save(group);
+
+        // TODO : send notif
+        // TODO : check tests after sending notif
+        return true;
     }
 
     @Override
@@ -102,9 +117,9 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
-    private UserEntity findUserByIdOrThrowException(Long userId, Object argument) {
+    private UserEntity findUserByIdOrThrowException(Long userId) {
         return userService.findById(userId)
-                .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, argument));
+                .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, userId));
     }
 
     private void checkGroupBelongsToUser(GroupEntity group) {
@@ -113,5 +128,15 @@ public class GroupServiceImpl implements GroupService {
         if (!userId.equals(group.getCreatorId())) {
             throw new SystemException(StatusCodes.ACCESS_DENIED, ErrorCodes.NOT_OWNER_OF_GROUP, group.getId());
         }
+    }
+
+    private GroupInviteEntity findPendingInvite(Long userId, Long groupId) {
+        GroupInviteEntity invite = groupInviteRepository.findFirstByInvitedIdAndGroupId(userId, groupId)
+                .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.GROUP_INVITE_NOT_FOUND, "group Invite not found"));
+
+        if (invite.getAccepted() != null) {
+            throw new SystemException(StatusCodes.BAD_REQUEST, ErrorCodes.GROUP_INVITE_NOT_CHANGEABLE, "Cannot change status of this invite request");
+        }
+        return invite;
     }
 }
