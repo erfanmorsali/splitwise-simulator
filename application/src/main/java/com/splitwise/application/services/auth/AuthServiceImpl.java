@@ -1,6 +1,7 @@
 package com.splitwise.application.services.auth;
 
 import com.splitwise.application.models.dtos.auth.OtpRequest;
+import com.splitwise.application.models.dtos.auth.RefreshTokenRequest;
 import com.splitwise.application.models.dtos.auth.TokenResponse;
 import com.splitwise.application.models.dtos.auth.VerifyOtpRequest;
 import com.splitwise.application.models.entities.user.UserEntity;
@@ -53,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public TokenResponse verifyOtp(VerifyOtpRequest request) {
         UserEntity user = userService.findByMobile(request.getMobile())
-                .orElseThrow(() -> new SystemException(StausCodes.BAD_REQUEST, ErrorCodes.USER_NOT_FOUND, "Invalid mobile"));
+                .orElseThrow(() -> new SystemException(StausCodes.DATA_NOT_FOUND, ErrorCodes.USER_NOT_FOUND, "Invalid mobile"));
 
         boolean isValid = otpService.validateOtp(user.getMobile(), request.getCode());
         if (!isValid) {
@@ -61,5 +62,11 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return jwtService.create(user.getId());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public TokenResponse refresh(RefreshTokenRequest request) {
+        return new TokenResponse();
     }
 }
