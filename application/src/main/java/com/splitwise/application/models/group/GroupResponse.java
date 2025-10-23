@@ -52,12 +52,12 @@ public class GroupResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     private static class UserResponse {
-        private Long userId;
+        private Long id;
         private String name;
 
         public UserResponse(UserEntity user) {
             if (user != null) {
-                this.userId = user.getId();
+                this.id = user.getId();
                 this.name = user.getName();
             }
         }
