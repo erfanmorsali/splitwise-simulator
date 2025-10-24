@@ -111,5 +111,52 @@
             create sequence splitwise.events_sequence start with 1 increment by 50;
         </sql>
     </changeSet>
+    <changeSet id="create-cost-table" author="erfan" failOnError="true">
+        <sql>
+            create table splitwise.costs
+            (
+                id_pk         bigint not null,
+                created       timestamp(6),
+                deleted       timestamp(6),
+                updated       timestamp(6),
+                amount        numeric(38, 2),
+                creator_id_fk bigint,
+                description   varchar(200),
+                group_id_fk   bigint,
+                settled       boolean default false,
+                title         varchar(100),
+                primary key (id_pk)
+            );
+
+            create table splitwise.user_costs
+            (
+                cost_id_fk bigint not null,
+                user_id_fk bigint not null,
+                primary key (cost_id_fk, user_id_fk)
+            );
+
+            create sequence splitwise.costs_sequence start with 1 increment by 50;
+
+            alter table if exists splitwise.costs
+                add constraint FKsus7aurlvq80kl87woepo9sbs
+                foreign key (creator_id_fk)
+                references splitwise.users;
+
+            alter table if exists splitwise.costs
+                add constraint FKghpvwxkvkd76wv7kh1xh57phu
+                foreign key (group_id_fk)
+                references splitwise.groups;
+
+            alter table if exists splitwise.user_costs
+                add constraint FKfr11huka1a5pauysx62td6gx3
+                foreign key (user_id_fk)
+                references splitwise.users;
+
+            alter table if exists splitwise.user_costs
+                add constraint FKob4wqxskr24in5220ctos0mvw
+                foreign key (cost_id_fk)
+                references splitwise.costs;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
 
