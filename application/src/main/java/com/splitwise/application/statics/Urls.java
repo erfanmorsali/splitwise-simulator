@@ -16,4 +16,5 @@ public abstract class Urls {
 
     // Cost Controller
     public static final String COST = "group/{groupId}/cost";
+    public static final String COST_ID = "group/{groupId}/cost/{id}";
 }

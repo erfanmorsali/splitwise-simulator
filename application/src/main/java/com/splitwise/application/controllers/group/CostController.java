@@ -30,4 +30,9 @@ public class CostController {
         filter.putGroupId(groupId);
         return new ResponseEntity<>(service.getAll(filter), HttpStatus.OK);
     }
+
+    @GetMapping(Urls.COST_ID)
+    public ResponseEntity<CostResponse> getById(@PathVariable(value = "groupId") Long groupId, @PathVariable(value = "id") Long id) {
+        return new ResponseEntity<>(service.getById(id, JwtUser.getAuthenticatedUser().getId(), groupId), HttpStatus.OK);
+    }
 }
