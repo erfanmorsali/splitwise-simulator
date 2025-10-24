@@ -25,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean requestOtp(OtpRequest request) {
+    public String requestOtp(OtpRequest request) {
         String mobile = request.getMobile();
 
         Optional<UserEntity> optionalUser = userService.findByMobile(mobile);
@@ -40,12 +40,12 @@ public class AuthServiceImpl implements AuthService {
         OtpService.OtpResponse otpResponse = otpService.generateOtp(mobile);
 
         if (!otpResponse.isSendOtp()) {
-            return false; // we sent code in last x minutes . so we should not send again
+            return null; // we sent code in last x minutes . so we should not send again
         }
 
         // send sms
         System.out.println(otpResponse.getCode());
-        return true;
+        return otpResponse.getCode();
     }
 
     @Transactional(readOnly = true)

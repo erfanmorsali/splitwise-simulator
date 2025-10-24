@@ -24,7 +24,7 @@ public class AuthController {
 
 
     @PostMapping(Urls.REQUEST_OTP)
-    public ResponseEntity<Boolean> requestOtp(@Valid @RequestBody OtpRequest request) {
+    public ResponseEntity<String> requestOtp(@Valid @RequestBody OtpRequest request) {
         return new ResponseEntity<>(service.requestOtp(request), HttpStatus.OK);
     }
 

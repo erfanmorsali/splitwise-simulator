@@ -12,6 +12,7 @@ import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.application.statics.Caches;
+import com.splitwise.shared.brokers.models.GroupInviteEventMessage;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;

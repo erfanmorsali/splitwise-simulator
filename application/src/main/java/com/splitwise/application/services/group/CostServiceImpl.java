@@ -69,7 +69,6 @@ public class CostServiceImpl implements CostService {
     public CostResponse create(CreateCostRequest request, Long groupId) {
         Long userId = JwtUser.getAuthenticatedUser().getId();
 
-        request.getInvolvedUsers().remove(userId);
         findGroupByIdAndCheckUsersBelongToGroup(userId, request.getInvolvedUsers(), groupId);
 
         CostEntity costEntity = createCostEntity(request, userId, groupId);

@@ -1,4 +1,4 @@
-package com.splitwise.application.models.dtos.group;
+package com.splitwise.shared.brokers.models;
 
 
 import lombok.AllArgsConstructor;
