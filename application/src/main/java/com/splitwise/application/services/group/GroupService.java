@@ -5,6 +5,7 @@ import com.splitwise.application.models.dtos.group.CreateGroupRequest;
 import com.splitwise.application.models.dtos.group.EditGroupRequest;
 import com.splitwise.application.models.dtos.group.GroupInviteRequest;
 import com.splitwise.application.models.dtos.group.GroupResponse;
+import com.splitwise.application.models.entities.group.GroupEntity;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface GroupService {
     boolean rejectInvite(Long groupId);
 
     boolean delete(Long id);
+
+    GroupEntity findByIdAndFetchUsersOrThrowException(Long id);
 }

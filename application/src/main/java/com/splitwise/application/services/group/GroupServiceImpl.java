@@ -153,14 +153,16 @@ public class GroupServiceImpl implements GroupService {
     }
 
 
-    private GroupEntity findByIdAndFetchUsersOrThrowException(Long id) {
+    public GroupEntity findByIdAndFetchUsersOrThrowException(Long id) {
         return findGroupByIdAndFetchUsers(id)
                 .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.GROUP_NOT_FOUND, id));
     }
 
+
     private Optional<GroupEntity> findGroupByIdAndFetchUsers(Long id) {
         return groupRepository.findGroupByIdAndFetchUsers(id);
     }
+
 
     private GroupEntity findByIdOrThrowException(Long id) {
         return groupRepository.findById(id)
