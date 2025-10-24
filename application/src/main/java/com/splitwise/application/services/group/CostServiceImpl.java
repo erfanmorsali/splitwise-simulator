@@ -16,6 +16,10 @@ public class CostServiceImpl implements CostService {
 
     @Override
     public List<CostResponse> getAll(CostFilter filter) {
-        return List.of();
+        return costRepository
+                .findAll(filter.toSpecification(), filter.toPageable())
+                .stream()
+                .map(CostResponse::new)
+                .toList();
     }
 }
