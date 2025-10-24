@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
-    List<EventEntity> findTop1000ByFailedFalseOrderByCreatedAsc();
+    List<EventEntity> findTop5000ByFailedFalseOrderByCreatedAsc();
 
 }

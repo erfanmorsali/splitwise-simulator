@@ -26,7 +26,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventEntity> getEvents() {
-        return eventRepository.findTop1000ByFailedFalseOrderByCreatedAsc();
+        return eventRepository.findTop5000ByFailedFalseOrderByCreatedAsc();
     }
 
     @Override

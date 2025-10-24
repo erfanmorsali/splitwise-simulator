@@ -5,6 +5,7 @@ import com.splitwise.application.models.entities.event.EventEntity;
 import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.messageBroker.MessageBroker;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ public class OutBoxService {
     private final MessageBroker messageBroker;
 
     @Scheduled(fixedRate = 20_000)
+    @SchedulerLock(name = "outbox-event", lockAtMostFor = "PT60S", lockAtLeastFor = "PT5S")
     @Transactional
     public void processEvents() {
         List<EventEntity> failedEvents = new ArrayList<>();
@@ -37,6 +39,6 @@ public class OutBoxService {
         }
 
         eventService.deleteEvents(successEvents);
-        eventService.deleteEvents(failedEvents);
+        eventService.updateEvents(failedEvents);
     }
 }
