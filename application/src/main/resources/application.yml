@@ -48,6 +48,8 @@ spring:
       properties:
         enable.idempotence: true
 
+
+
 otp:
   duration:
     120

@@ -9,6 +9,7 @@ public abstract class Urls {
     // Group Controller
     public static final String GROUP = "group";
     public static final String GROUP_ID = "group/{id}";
+    public static final String GROUP_MEMBERS = "group/{id}/members";
     public static final String GROUP_INVITE = "group/{id}/invite";
     public static final String GROUP_INVITE_ACCEPT = "group/{id}/invite/accept";
     public static final String GROUP_INVITE_REJECT = "group/{id}/invite/reject";
@@ -19,4 +20,10 @@ public abstract class Urls {
     // Cost Controller
     public static final String COST = "group/{groupId}/cost";
     public static final String COST_ID = "group/{groupId}/cost/{id}";
+
+
+
+    // User Controller
+    public static final String USER = "user";
+    public static final String USER_ID = "user/{id}";
 }

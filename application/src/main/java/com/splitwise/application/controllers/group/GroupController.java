@@ -30,6 +30,11 @@ public class GroupController {
         return new ResponseEntity<>(service.getById(id), HttpStatus.OK);
     }
 
+    @GetMapping(Urls.GROUP_MEMBERS)
+    public ResponseEntity<List<GroupResponse.UserResponse>> getMembers(@PathVariable(value = "id") Long id) {
+        return new ResponseEntity<>(service.getGroupMembers(id), HttpStatus.OK);
+    }
+
     @GetMapping(Urls.GROUP_BALANCE)
     public ResponseEntity<List<BalanceResponse>> getBalance(@PathVariable(value = "id") Long id) {
         return new ResponseEntity<>(service.getGroupBalance(id), HttpStatus.OK);

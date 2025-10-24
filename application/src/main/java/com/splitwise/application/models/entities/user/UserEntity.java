@@ -2,12 +2,15 @@ package com.splitwise.application.models.entities.user;
 
 
 import com.splitwise.application.models.entities.BaseEntity;
+import com.splitwise.application.models.entities.group.GroupEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,4 +31,10 @@ public class UserEntity extends BaseEntity {
     private String name;
     @Column(name = "suspended", columnDefinition = "boolean default false")
     private boolean suspended;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_group",
+            joinColumns = @JoinColumn(name = "user_id_fk"),
+            inverseJoinColumns = @JoinColumn(name = "group_id_fk"))
+    private Set<GroupEntity> groups;
 }

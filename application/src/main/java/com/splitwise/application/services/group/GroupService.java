@@ -1,6 +1,5 @@
 package com.splitwise.application.services.group;
 
-import com.splitwise.application.controllers.group.GroupFilter;
 import com.splitwise.application.models.dtos.group.*;
 import com.splitwise.application.models.entities.group.GroupEntity;
 
@@ -10,6 +9,9 @@ public interface GroupService {
     List<GroupResponse> getAll(GroupFilter filter);
 
     GroupResponse getById(Long id);
+
+    List<GroupResponse.UserResponse> getGroupMembers(Long id);
+
 
     GroupResponse create(CreateGroupRequest request);
 

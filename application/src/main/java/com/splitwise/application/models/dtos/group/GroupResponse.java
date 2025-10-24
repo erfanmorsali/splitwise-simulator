@@ -51,7 +51,7 @@ public class GroupResponse {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    private static class UserResponse {
+    public static class UserResponse {
         private Long id;
         private String name;
 

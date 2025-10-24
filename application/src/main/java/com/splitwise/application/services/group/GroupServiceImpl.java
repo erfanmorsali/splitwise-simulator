@@ -1,7 +1,6 @@
 package com.splitwise.application.services.group;
 
 
-import com.splitwise.application.controllers.group.GroupFilter;
 import com.splitwise.application.models.dtos.group.*;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.group.GroupInviteEntity;
@@ -27,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +53,14 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity group = findByIdAndFetchUsersOrThrowException(id);
         checkUserIsMemberOfGroup(group);
         return new GroupResponse(group);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GroupResponse.UserResponse> getGroupMembers(Long id) {
+        GroupEntity group = findByIdAndFetchUsersOrThrowException(id);
+        checkUserIsMemberOfGroup(group);
+        return userService.findByGroupId(id).stream().map(GroupResponse.UserResponse::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
