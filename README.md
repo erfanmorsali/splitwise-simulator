@@ -54,3 +54,13 @@ The project is composed of multiple modules/services:
 > 📝 Design Note:  
 > In a real production setup, Debezium or Change Data Capture (CDC) could be used instead of a scheduler to provide a more scalable and near-real-time event streaming mechanism.  
 > However, a scheduler was chosen here for simplicity and clarity, making it easier to demonstrate the outbox pattern within a limited project timeframe.
+
+
+## 🧠 Design Decisions
+
+- Outbox Pattern → Guarantees reliable event delivery and transactional consistency.
+- ShedLock → Prevents concurrency issues in distributed environments.
+- Modular Design → Shared module separates reusable logic and models.
+- Redis for OTP & Rate Limit → Ensures fast lookups and easy expiration handling.
+- Kafka for Event Communication → Enables decoupling and scalability between core and notification modules.
+- Docker Compose → Simplifies local orchestration of PostgreSQL, Redis, Kafka, and all app services.
