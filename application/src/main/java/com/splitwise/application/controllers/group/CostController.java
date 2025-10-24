@@ -38,4 +38,9 @@ public class CostController {
     public ResponseEntity<CostResponse> create(@PathVariable(name = "groupId") Long groupId, @Valid @RequestBody CreateCostRequest request) {
         return new ResponseEntity<>(service.create(request, groupId), HttpStatus.OK);
     }
+
+    @DeleteMapping(Urls.COST_ID)
+    public void delete(@PathVariable(name = "groupId") Long groupId, @PathVariable(name = "id") Long id) {
+        service.delete(id);
+    }
 }

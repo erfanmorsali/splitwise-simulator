@@ -6,6 +6,7 @@ import com.splitwise.application.models.entities.group.CostEntity;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.repositories.group.CostRepository;
+import com.splitwise.application.services.user.UserService;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.SystemException;
 import org.junit.jupiter.api.AfterEach;
@@ -22,6 +23,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -30,6 +32,8 @@ class CostServiceImplTest {
 
     @Mock
     private CostRepository costRepository;
+    @Mock
+    private UserService userService;
     @Mock
     private GroupService groupService;
     @InjectMocks
@@ -70,6 +74,44 @@ class CostServiceImplTest {
         when(groupService.findByIdAndFetchUsersOrThrowException(any())).thenReturn(createGroupEntity());
         SystemException ex = assertThrows(SystemException.class, () -> costService.create(request, 1L));
         assertEquals(ErrorCodes.NOT_MEMBER_OF_GROUP.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void create_success() {
+        CreateCostRequest request = createCostRequest();
+        GroupEntity group = createGroupEntity();
+        UserEntity currentUser = new UserEntity();
+        currentUser.setId(currentUserId);
+        group.getUsers().add(currentUser);
+        when(groupService.findByIdAndFetchUsersOrThrowException(any())).thenReturn(group);
+        when(userService.findByIds(any())).thenReturn(new ArrayList<>());
+        assertDoesNotThrow(() -> costService.create(request, 1L));
+        verify(costRepository).save(any());
+    }
+
+    @Test
+    void delete_costNotFound_exception() {
+        when(costRepository.findById(any())).thenReturn(Optional.empty());
+        SystemException ex = assertThrows(SystemException.class, () -> costService.delete(1L));
+        assertEquals(ErrorCodes.COST_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void delete_userIsNotCreatorOfCost_exception() {
+        CostEntity costEntity = createCostEntity();
+        costEntity.setCreatorId(currentUserId + 1);
+        when(costRepository.findById(any())).thenReturn(Optional.of(costEntity));
+        SystemException ex = assertThrows(SystemException.class, () -> costService.delete(1L));
+        assertEquals(ErrorCodes.NOT_OWNER_OF_GROUP.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
+    void delete_success() {
+        CostEntity costEntity = createCostEntity();
+        costEntity.setCreatorId(currentUserId);
+        when(costRepository.findById(any())).thenReturn(Optional.of(costEntity));
+        assertDoesNotThrow(() -> costService.delete(1L));
+        verify(costRepository).save(any());
     }
 
 
