@@ -95,5 +95,21 @@
                 references splitwise.users;
         </sql>
     </changeSet>
+    <changeSet id="create-event-table" author="erfan" failOnError="true">
+        <sql>
+            create table splitwise.events
+            (
+                id_pk   bigint not null,
+                created timestamp(6),
+                deleted timestamp(6),
+                updated timestamp(6),
+                payload jsonb,
+                sent    boolean default false,
+                topic   varchar(100),
+                primary key (id_pk)
+            );
+            create sequence splitwise.events_sequence start with 1 increment by 50;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
 
