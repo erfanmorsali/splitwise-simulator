@@ -295,7 +295,7 @@ class GroupServiceImplTest {
         GroupInviteEntity invite = createGroupInvite();
         invite.setAccepted(null);
         when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
-        when(groupRepository.findById(any())).thenReturn(Optional.empty());
+        when(groupRepository.findGroupByIdAndFetchUsers(any())).thenReturn(Optional.empty());
         SystemException ex = assertThrows(SystemException.class, () -> groupService.rejectInvite(1L));
         assertEquals(ErrorCodes.GROUP_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
     }
