@@ -64,3 +64,18 @@ The project is composed of multiple modules/services:
 - Redis for OTP & Rate Limit → Ensures fast lookups and easy expiration handling.
 - Kafka for Event Communication → Enables decoupling and scalability between core and notification modules.
 - Docker Compose → Simplifies local orchestration of PostgreSQL, Redis, Kafka, and all app services.
+
+## 🐳 Docker Setup
+
+The entire system can be run locally using Docker Compose:
+
+
+```console
+docker-compose up --build
+```
+
+## API Usage
+
+After running the application, you can access the API documentation (Swagger UI) here:
+
+[Swagger UI](http://localhost:7000/api/v1/swagger-ui)
