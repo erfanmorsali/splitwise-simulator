@@ -2,18 +2,17 @@ package com.splitwise.application.services.group;
 
 
 import com.splitwise.application.controllers.group.GroupFilter;
-import com.splitwise.application.models.dtos.group.CreateGroupRequest;
-import com.splitwise.application.models.dtos.group.EditGroupRequest;
-import com.splitwise.application.models.dtos.group.GroupInviteRequest;
-import com.splitwise.application.models.dtos.group.GroupResponse;
+import com.splitwise.application.models.dtos.group.*;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.group.GroupInviteEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.repositories.group.GroupInviteRepository;
 import com.splitwise.application.repositories.group.GroupRepository;
 import com.splitwise.application.security.JwtUser;
+import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.application.statics.Caches;
+import com.splitwise.application.statics.Topics;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
@@ -35,6 +34,7 @@ public class GroupServiceImpl implements GroupService {
     private final GroupRepository groupRepository;
     private final UserService userService;
     private final GroupInviteRepository groupInviteRepository;
+    private final EventService eventService;
 
 
     @Override
@@ -57,7 +57,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CachePut(value = Caches.GROUP,key = "#result.id")
+    @CachePut(value = Caches.GROUP, key = "#result.id")
     public GroupResponse create(CreateGroupRequest request) {
         Long userId = JwtUser.getAuthenticatedUser().getId();
         UserEntity user = findUserByIdOrThrowException(userId);
@@ -126,8 +126,10 @@ public class GroupServiceImpl implements GroupService {
 
         groupInviteRepository.save(invite);
         groupRepository.save(group);
-
-        // TODO : send notif
+        eventService.createEvent(
+                createEventPayloadForInvite(groupId, userId, group.getCreator(), GroupInviteEventMessage.GroupInviteOperation.ACCEPT),
+                Topics.GROUP_INVITE
+        );
         // TODO : check tests after sending notif
         return true;
     }
@@ -140,9 +142,12 @@ public class GroupServiceImpl implements GroupService {
         GroupInviteEntity invite = findPendingInvite(userId, groupId);
         invite.setAccepted(false);
 
-        findByIdOrThrowException(groupId);
+        GroupEntity group = findByIdAndFetchUsersOrThrowException(groupId);
         groupInviteRepository.save(invite);
-        // TODO : send notif
+        eventService.createEvent(
+                createEventPayloadForInvite(groupId, userId, group.getCreator(), GroupInviteEventMessage.GroupInviteOperation.REJECT),
+                Topics.GROUP_INVITE
+        );
         // TODO : check tests after sending notif
         return false;
     }
@@ -206,5 +211,15 @@ public class GroupServiceImpl implements GroupService {
                 throw new SystemException(StatusCodes.BAD_REQUEST, ErrorCodes.USER_ALREADY_MEMBER_OF_GROUP, "user already in this group");
             }
         }
+    }
+
+    private GroupInviteEventMessage createEventPayloadForInvite(Long groupId, Long userId, UserEntity creator, GroupInviteEventMessage.GroupInviteOperation operation) {
+        GroupInviteEventMessage groupInviteMessage = new GroupInviteEventMessage();
+        groupInviteMessage.setGroupId(groupId);
+        groupInviteMessage.setUserId(userId);
+        groupInviteMessage.setOperation(operation);
+        groupInviteMessage.setGroupOwner(creator.getMobile());
+
+        return groupInviteMessage;
     }
 }
