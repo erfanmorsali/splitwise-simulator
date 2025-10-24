@@ -31,6 +31,7 @@ public enum ErrorCodes {
 
 
     // General
+    TOO_MANY_REQUESTS(4041, "Too Many Requests"),
     SERVICE_UNAVAILABLE(4040, "Service Unavailable"),
     VALIDATION_EXCEPTION(5050, "Validation Exception");
 

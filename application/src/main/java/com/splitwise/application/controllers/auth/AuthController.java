@@ -7,6 +7,7 @@ import com.splitwise.application.models.dtos.auth.TokenResponse;
 import com.splitwise.application.models.dtos.auth.VerifyOtpRequest;
 import com.splitwise.application.services.auth.AuthService;
 import com.splitwise.application.statics.Urls;
+import com.splitwise.shared.objects.RateLimited;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ public class AuthController {
     private final AuthService service;
 
 
+    @RateLimited(limit = 5, duration = 120)
     @PostMapping(Urls.REQUEST_OTP)
     public ResponseEntity<String> requestOtp(@Valid @RequestBody OtpRequest request) {
         return new ResponseEntity<>(service.requestOtp(request), HttpStatus.OK);

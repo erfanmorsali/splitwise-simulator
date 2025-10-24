@@ -11,6 +11,7 @@ public enum StatusCodes {
     ACCESS_DENIED(401),
     DATA_NOT_FOUND(404),
     FORBIDDEN(403),
+    TOO_MANY_REQUESTS(429),
     SERVICER_UNAVAILABLE(503);
 
     private final Integer code;
