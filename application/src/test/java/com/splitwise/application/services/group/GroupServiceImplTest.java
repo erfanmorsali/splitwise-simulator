@@ -88,6 +88,13 @@ class GroupServiceImplTest {
     }
 
     @Test
+   void getGroupBalance_groupNotFound_exception() {
+        when(groupRepository.findGroupByIdAndFetchUsers(1L)).thenReturn(Optional.empty());
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.getGroupBalance(1L));
+        assertEquals(ErrorCodes.GROUP_NOT_FOUND.getCode(), ex.getErrorCode().getCode());
+   }
+
+    @Test
     void create_userNotFound_exception() {
         when(userService.findById(currentUserId)).thenReturn(Optional.empty());
         CreateGroupRequest request = createGroupRequest();

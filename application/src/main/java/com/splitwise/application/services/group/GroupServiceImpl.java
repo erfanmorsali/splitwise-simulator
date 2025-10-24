@@ -58,6 +58,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Transactional(readOnly = true)
     public List<BalanceResponse> getGroupBalance(Long id) {
+        GroupEntity group = findByIdAndFetchUsersOrThrowException(id);
         return new ArrayList<>();
     }
 
