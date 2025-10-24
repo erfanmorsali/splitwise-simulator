@@ -17,3 +17,25 @@ The project is composed of multiple modules/services:
 - Application Service – Handles groups, costs, balances, and authentication
 - Notification Service – Consumes domain events and sends user notifications
 - Shared Module – Contains shared DTOs, event models, and common configurations
+
+## ⚙️ Tech Stack
+
+| Component | Technology |
+|------------|-------------|
+| Language | Java 17 |
+| Framework | Spring Boot |
+| Database | PostgreSQL |
+| Cache / Rate Limit | Redis |
+| Message Broker | Apache Kafka |
+| Scheduler Locking | ShedLock |
+| Containerization | Docker Compose |
+| API Docs | Swagger / OpenAPI |
+| Authentication | JWT + OTP (via Redis, rate-limited by IP) |
+
+## 🔐 Security
+
+- JWT-based authentication ensures stateless and scalable sessions.
+- OTP login improves security and user experience.
+- IP-based rate limiting is implemented using Redis to prevent OTP abuse.
+- The design allows easy extraction of the authentication module into a standalone Auth Service in future scaling phases.
+- For test otp code returns from request-otp APi but for production it will send with SMS/EMAIL
