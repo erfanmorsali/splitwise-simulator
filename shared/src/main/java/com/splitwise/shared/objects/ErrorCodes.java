@@ -25,6 +25,10 @@ public enum ErrorCodes {
     USER_ALREADY_INVITED_TO_GROUP(45, "User Already Invited To Group"),
     USER_ALREADY_MEMBER_OF_GROUP(46, "User Already Is Member Of This Group"),
 
+    // Cost
+    COST_NOT_FOUND(60, "Cost Not Found"),
+
+
 
     // General
     VALIDATION_EXCEPTION(5050, "Validation Exception");
