@@ -3,6 +3,7 @@ package com.splitwise.application.outbox;
 
 import com.splitwise.application.models.entities.event.EventEntity;
 import com.splitwise.application.services.event.EventService;
+import com.splitwise.application.services.messageBroker.MessageBroker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OutBoxService {
     private final EventService eventService;
+    private final MessageBroker messageBroker;
 
     @Scheduled(fixedRate = 20_000)
     @Transactional
@@ -26,7 +28,7 @@ public class OutBoxService {
 
         for (EventEntity event : events) {
             try {
-                // send to message broker
+                messageBroker.sendMessage(event.getPayload(), event.getTopic());
                 successEvents.add(event);
             } catch (Exception e) {
                 event.setFailed(true);

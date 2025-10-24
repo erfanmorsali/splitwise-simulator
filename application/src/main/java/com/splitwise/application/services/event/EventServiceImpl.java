@@ -26,17 +26,17 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventEntity> getEvents() {
-        return List.of();
+        return eventRepository.findTop1000ByFailedFalseOrderByCreatedAsc();
     }
 
     @Override
     public void updateEvents(List<EventEntity> events) {
-        return;
+        eventRepository.saveAll(events);
     }
 
     @Override
     public void deleteEvents(List<EventEntity> events) {
-        return;
+        eventRepository.deleteAll(events);
     }
 
     private String convertPayloadToJson(Object payload) {
