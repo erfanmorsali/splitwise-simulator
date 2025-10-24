@@ -8,6 +8,14 @@
     </parent>
     <artifactId>notification</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.splitwise-simulator</groupId>
+            <artifactId>shared</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

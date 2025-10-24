@@ -1,7 +1,6 @@
 package com.splitwise.application.services.group;
 
 
-import com.splitwise.application.models.dtos.group.CostEventMessage;
 import com.splitwise.application.models.dtos.group.CostFilter;
 import com.splitwise.application.models.dtos.group.CostResponse;
 import com.splitwise.application.models.dtos.group.CreateCostRequest;
@@ -14,10 +13,11 @@ import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.application.statics.Caches;
-import com.splitwise.application.statics.Topics;
+import com.splitwise.shared.brokers.models.CostEventMessage;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
+import com.splitwise.shared.statics.Topics;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;

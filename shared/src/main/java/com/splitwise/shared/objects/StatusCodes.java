@@ -10,7 +10,8 @@ public enum StatusCodes {
     BAD_REQUEST(400),
     ACCESS_DENIED(401),
     DATA_NOT_FOUND(404),
-    FORBIDDEN(403);
+    FORBIDDEN(403),
+    SERVICER_UNAVAILABLE(503);
 
     private final Integer code;
 

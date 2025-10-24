@@ -30,8 +30,8 @@ public enum ErrorCodes {
     NOT_OWNER_OF_COST(60, "User Is  Not Owner Of This Cost"),
 
 
-
     // General
+    SERVICE_UNAVAILABLE(4040, "Service Unavailable"),
     VALIDATION_EXCEPTION(5050, "Validation Exception");
 
     private final Integer code;

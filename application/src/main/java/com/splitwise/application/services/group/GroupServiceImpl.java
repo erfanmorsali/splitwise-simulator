@@ -12,10 +12,10 @@ import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.application.statics.Caches;
-import com.splitwise.application.statics.Topics;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
+import com.splitwise.shared.statics.Topics;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -136,7 +136,6 @@ public class GroupServiceImpl implements GroupService {
                 createEventPayloadForInvite(groupId, userId, group.getCreator(), GroupInviteEventMessage.GroupInviteOperation.ACCEPT),
                 Topics.GROUP_INVITE
         );
-        // TODO : check tests after sending notif
         return true;
     }
 
@@ -154,7 +153,6 @@ public class GroupServiceImpl implements GroupService {
                 createEventPayloadForInvite(groupId, userId, group.getCreator(), GroupInviteEventMessage.GroupInviteOperation.REJECT),
                 Topics.GROUP_INVITE
         );
-        // TODO : check tests after sending notif
         return false;
     }
 
