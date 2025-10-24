@@ -27,6 +27,7 @@ public enum ErrorCodes {
 
     // Cost
     COST_NOT_FOUND(60, "Cost Not Found"),
+    NOT_OWNER_OF_COST(60, "User Is  Not Owner Of This Cost"),
 
 
 

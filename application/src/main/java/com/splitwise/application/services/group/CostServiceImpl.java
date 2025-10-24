@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +68,18 @@ public class CostServiceImpl implements CostService {
         return new CostResponse(costEntity);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean delete(Long id) {
+        Long userId = JwtUser.getAuthenticatedUser().getId();
+        CostEntity cost = findByIdOrThrowException(id);
+        validateOwnership(cost, userId);
+        cost.setDeleted(LocalDateTime.now());
+
+        costRepository.save(cost);
+        return true;
+    }
+
 
     private void findGroupByIdAndCheckUsersBelongToGroup(Long userId, Set<Long> userIds, Long groupId) {
         GroupEntity group = groupService.findByIdAndFetchUsersOrThrowException(groupId);
@@ -92,5 +105,16 @@ public class CostServiceImpl implements CostService {
         costEntity.setCreatorId(userId);
         costEntity.setInvolvedUsers(new HashSet<>(involvedUsers));
         return costEntity;
+    }
+
+    private CostEntity findByIdOrThrowException(Long id) {
+        return costRepository.findById(id)
+                .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.COST_NOT_FOUND, id));
+    }
+
+    private void validateOwnership(CostEntity cost, Long userId) {
+        if (!cost.getCreatorId().equals(userId)) {
+            throw new SystemException(StatusCodes.ACCESS_DENIED, ErrorCodes.NOT_OWNER_OF_GROUP, "cant change this cost");
+        }
     }
 }

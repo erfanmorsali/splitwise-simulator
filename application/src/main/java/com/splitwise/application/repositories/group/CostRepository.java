@@ -11,8 +11,8 @@ import java.util.Optional;
 
 
 @Repository
-public interface CostRepository extends JpaRepository<CostEntity, Integer>, JpaSpecificationExecutor<CostEntity> {
+public interface CostRepository extends JpaRepository<CostEntity, Long>, JpaSpecificationExecutor<CostEntity> {
 
-    @Query(value = "select entity from CostEntity entity left join entity.group group left join group.users groupUsers where groupUsers.id = :userId and entity.id = :id and entity.groupId = :groupId")
+    @Query(value = "select entity from CostEntity entity left join entity.group group left join group.users groupUsers where groupUsers.id = :userId and entity.id = :id and entity.groupId = :groupId and entity.deleted is null ")
     Optional<CostEntity> findByIdAndUserIdAndGroupId(@Param("id") Long id, @Param("userId") Long userId, @Param("groupId") Long groupId);
 }

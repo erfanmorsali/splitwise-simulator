@@ -12,5 +12,6 @@ public interface CostService {
     CostResponse getById(Long id, Long userId, Long groupId);
 
     CostResponse create(CreateCostRequest request, Long groupId);
+    boolean delete(Long id);
 
 }
