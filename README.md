@@ -78,4 +78,4 @@ docker-compose up --build
 
 After running the application, you can access the API documentation (Swagger UI) here:
 
-[Swagger UI](http://localhost:7000/api/v1/swagger-ui)
+[Swagger UI](http://localhost:7000/api/v1/swagger-ui/index.html)
