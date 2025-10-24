@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   postgres:
+    container_name: postgres
     image: postgres:16
+    networks:
+      - backend
     environment:
       POSTGRES_USER: splitwise
       POSTGRES_PASSWORD: splitwise
@@ -14,11 +17,15 @@ services:
       - database:/var/lib/postgresql/data
 
   redis:
+    container_name: redis
     image: redis:7
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+
+    networks:
+      - backend
 
   zookeeper:
     image: confluentinc/cp-zookeeper:5.5.3
@@ -48,10 +55,29 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - kafka-net
+      - backend
     volumes:
       - kafka_data:/var/lib/kafka/data
 
+  application-service:
+    build:
+      context: .
+      dockerfile: DockerfileApplication
+    container_name: application-service
+    ports:
+      - "7000:7000"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    depends_on:
+      - kafka
+      - postgres
+      - redis
+    networks:
+      - backend
+
 networks:
+  backend:
+    external: false
   kafka-net:
     external: false
 

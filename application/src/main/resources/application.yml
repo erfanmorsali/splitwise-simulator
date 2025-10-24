@@ -21,7 +21,7 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5435/splitwise?currentSchema=splitwise
+    url: jdbc:postgresql://postgres:5435/splitwise?currentSchema=splitwise
     username: splitwise
     password: splitwise
 
@@ -40,7 +40,7 @@ spring:
 
 
   kafka:
-    bootstrap-servers: localhost:29092
+    bootstrap-servers: kafka:29092
     producer:
       acks: all
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
