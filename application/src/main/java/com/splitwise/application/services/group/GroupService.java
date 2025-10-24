@@ -1,10 +1,7 @@
 package com.splitwise.application.services.group;
 
 import com.splitwise.application.controllers.group.GroupFilter;
-import com.splitwise.application.models.dtos.group.CreateGroupRequest;
-import com.splitwise.application.models.dtos.group.EditGroupRequest;
-import com.splitwise.application.models.dtos.group.GroupInviteRequest;
-import com.splitwise.application.models.dtos.group.GroupResponse;
+import com.splitwise.application.models.dtos.group.*;
 import com.splitwise.application.models.entities.group.GroupEntity;
 
 import java.util.List;
@@ -17,6 +14,8 @@ public interface GroupService {
     GroupResponse create(CreateGroupRequest request);
 
     GroupResponse update(Long id, EditGroupRequest request);
+
+    List<BalanceResponse> getGroupBalance(Long id);
 
     boolean inviteToGroup(Long id, GroupInviteRequest request);
 

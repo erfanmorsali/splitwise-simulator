@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,11 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity group = findByIdAndFetchUsersOrThrowException(id);
         checkUserIsMemberOfGroup(group);
         return new GroupResponse(group);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BalanceResponse> getGroupBalance(Long id) {
+        return new ArrayList<>();
     }
 
     @Override
