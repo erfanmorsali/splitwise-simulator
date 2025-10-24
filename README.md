@@ -39,3 +39,18 @@ The project is composed of multiple modules/services:
 - IP-based rate limiting is implemented using Redis to prevent OTP abuse.
 - The design allows easy extraction of the authentication module into a standalone Auth Service in future scaling phases.
 - For test otp code returns from request-otp APi but for production it will send with SMS/EMAIL
+
+### 📤 Event Flow & Outbox Pattern
+
+1. Whenever an important action occurs (e.g., invite accepted, expense added),  
+   an event is saved into an events table in the same transaction.
+
+2. A scheduler runs every 20 seconds and fetches up to 5000 unsent events.
+
+3. The scheduler publishes those events to Kafka topics and delete them if succeed and flag them as failed if failed.
+
+4. ShedLock is used to ensure that only one instance of the scheduler executes the job at a time (prevents double sending).
+
+> 📝 Design Note:  
+> In a real production setup, Debezium or Change Data Capture (CDC) could be used instead of a scheduler to provide a more scalable and near-real-time event streaming mechanism.  
+> However, a scheduler was chosen here for simplicity and clarity, making it easier to demonstrate the outbox pattern within a limited project timeframe.
