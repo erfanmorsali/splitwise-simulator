@@ -39,7 +39,6 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = Caches.GROUP_LIST, key = "#filter.hashCode()")
     public List<GroupResponse> getAll(GroupFilter filter) {
         return groupRepository.findAll(filter.toSpecification(), filter.toPageable()).stream()
                 .map(GroupResponse::new)

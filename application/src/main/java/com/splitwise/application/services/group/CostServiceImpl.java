@@ -13,11 +13,15 @@ import com.splitwise.application.repositories.group.CostRepository;
 import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.user.UserService;
+import com.splitwise.application.statics.Caches;
 import com.splitwise.application.statics.Topics;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +45,7 @@ public class CostServiceImpl implements CostService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = Caches.COST_LIST, key = "#filter.hashCode()")
     public List<CostResponse> getAll(CostFilter filter) {
         return costRepository
                 .findAll(filter.toSpecification(), filter.toPageable())
@@ -51,6 +56,7 @@ public class CostServiceImpl implements CostService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = Caches.COST, key = "#id")
     public CostResponse getById(Long id, Long userId, Long groupId) {
         CostEntity cost = costRepository.findByIdAndUserIdAndGroupId(id, userId, groupId)
                 .orElseThrow(() -> new SystemException(StatusCodes.DATA_NOT_FOUND, ErrorCodes.COST_NOT_FOUND, id));
@@ -59,6 +65,7 @@ public class CostServiceImpl implements CostService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CachePut(value = Caches.COST, key = "#result.id")
     public CostResponse create(CreateCostRequest request, Long groupId) {
         Long userId = JwtUser.getAuthenticatedUser().getId();
 
@@ -76,6 +83,7 @@ public class CostServiceImpl implements CostService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = {Caches.COST, Caches.COST_LIST}, allEntries = true)
     public boolean delete(Long id) {
         Long userId = JwtUser.getAuthenticatedUser().getId();
         CostEntity cost = findByIdOrThrowException(id);
