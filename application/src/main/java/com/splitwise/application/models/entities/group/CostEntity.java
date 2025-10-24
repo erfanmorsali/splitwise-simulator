@@ -51,4 +51,6 @@ public class CostEntity extends BaseEntity {
     @JoinColumn(name = "group_id_fk", updatable = false, insertable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private GroupEntity group;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cost", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private Set<CostDocumentEntity> documents;
 }

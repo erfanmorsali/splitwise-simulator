@@ -158,5 +158,44 @@
                 references splitwise.costs;
         </sql>
     </changeSet>
+    <changeSet id="create-cost-document-table" author="erfan" failOnError="true">
+        <sql>
+            create table splitwise.cost_documents
+            (
+                id_pk          bigint not null,
+                created        timestamp(6),
+                deleted        timestamp(6),
+                updated        timestamp(6),
+                amount         numeric(38, 2),
+                cost_id_fk     bigint,
+                creditor_id_fk bigint,
+                debtor_id_fk   bigint,
+                group_id_fk    bigint,
+                primary key (id_pk)
+            );
+
+            create sequence splitwise.cost_documents_sequence start with 1 increment by 50;
+
+            alter table if exists splitwise.cost_documents
+                add constraint FKpvm2y4nflgr819c16dnjfqumk
+                foreign key (cost_id_fk)
+                references splitwise.costs;
+
+            alter table if exists splitwise.cost_documents
+                add constraint FKgkic8cpx1qbtd65wxgrdh0b1x
+                foreign key (creditor_id_fk)
+                references splitwise.users;
+
+            alter table if exists splitwise.cost_documents
+                add constraint FK1hjq3g78fydcj59rcm6a0b30v
+                foreign key (debtor_id_fk)
+                references splitwise.users;
+
+            alter table if exists splitwise.cost_documents
+                add constraint FKhl12u3n2hoyw2infa3gc5y3oa
+                foreign key (group_id_fk)
+                references splitwise.groups;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
 
