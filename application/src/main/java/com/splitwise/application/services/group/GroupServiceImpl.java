@@ -94,6 +94,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean inviteToGroup(Long id, GroupInviteRequest request) {
         GroupEntity group = findByIdOrThrowException(id);
         checkGroupBelongsToUser(group);
