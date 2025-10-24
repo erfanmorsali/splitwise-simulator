@@ -75,6 +75,20 @@ services:
     networks:
       - backend
 
+  notification-service:
+    build:
+      context: .
+      dockerfile: DockerfileNotification
+    container_name: notification-service
+    ports:
+      - "7010:7010"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    depends_on:
+      - kafka
+    networks:
+      - backend
+
 networks:
   backend:
     external: false
