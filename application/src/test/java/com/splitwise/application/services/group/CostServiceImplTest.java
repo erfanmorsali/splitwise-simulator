@@ -6,6 +6,7 @@ import com.splitwise.application.models.entities.group.CostEntity;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.repositories.group.CostRepository;
+import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.SystemException;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +34,8 @@ class CostServiceImplTest {
 
     @Mock
     private CostRepository costRepository;
+    @Mock
+    private EventService eventService;
     @Mock
     private UserService userService;
     @Mock
@@ -79,6 +83,7 @@ class CostServiceImplTest {
     @Test
     void create_success() {
         CreateCostRequest request = createCostRequest();
+        request.setAmount(new BigDecimal("150000000"));
         GroupEntity group = createGroupEntity();
         UserEntity currentUser = new UserEntity();
         currentUser.setId(currentUserId);
@@ -87,6 +92,7 @@ class CostServiceImplTest {
         when(userService.findByIds(any())).thenReturn(new ArrayList<>());
         assertDoesNotThrow(() -> costService.create(request, 1L));
         verify(costRepository).save(any());
+        verify(eventService).createEvent(any(),any());
     }
 
     @Test

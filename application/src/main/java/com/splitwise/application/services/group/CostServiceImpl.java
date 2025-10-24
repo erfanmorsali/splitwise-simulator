@@ -1,15 +1,19 @@
 package com.splitwise.application.services.group;
 
 
+import com.splitwise.application.models.dtos.group.CostEventMessage;
 import com.splitwise.application.models.dtos.group.CostFilter;
 import com.splitwise.application.models.dtos.group.CostResponse;
 import com.splitwise.application.models.dtos.group.CreateCostRequest;
+import com.splitwise.application.models.entities.group.CostDocumentEntity;
 import com.splitwise.application.models.entities.group.CostEntity;
 import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.repositories.group.CostRepository;
 import com.splitwise.application.security.JwtUser;
+import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.user.UserService;
+import com.splitwise.application.statics.Topics;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
@@ -17,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +36,7 @@ public class CostServiceImpl implements CostService {
     private final CostRepository costRepository;
     private final GroupService groupService;
     private final UserService userService;
+    private final EventService eventService;
 
 
     @Override
@@ -61,9 +68,8 @@ public class CostServiceImpl implements CostService {
         CostEntity costEntity = createCostEntity(request, userId, groupId);
         costRepository.save(costEntity);
 
-        // TODO : Create Documents To Determine Who Debits To Who
-        // TODO : Send Notif
-        // TODO : Update Tests After This
+        createCostDocuments(costEntity, request);
+        eventService.createEvent(createEventPayloadForCost(costEntity, CostEventMessage.CostOperation.CREATED), Topics.COST);
 
         return new CostResponse(costEntity);
     }
@@ -117,4 +123,42 @@ public class CostServiceImpl implements CostService {
             throw new SystemException(StatusCodes.ACCESS_DENIED, ErrorCodes.NOT_OWNER_OF_GROUP, "cant change this cost");
         }
     }
+
+    private void createCostDocuments(CostEntity cost, CreateCostRequest request) {
+        Set<Long> involvedUserIds = request.getInvolvedUsers();
+        BigDecimal amount = cost.getAmount();
+        BigDecimal amountPerUser = amount.divide(BigDecimal.valueOf(involvedUserIds.size()), RoundingMode.HALF_UP);
+
+        Set<CostDocumentEntity> documents = involvedUserIds.stream()
+                .map(userId -> createCostDocumentEntity(cost, amountPerUser, userId))
+                .collect(Collectors.toSet());
+
+        cost.setDocuments(documents);
+    }
+
+    private CostDocumentEntity createCostDocumentEntity(CostEntity cost, BigDecimal amountPerUser, Long userId) {
+        Long creatorId = cost.getCreatorId();
+        Long groupId = cost.getGroupId();
+
+        CostDocumentEntity costDocumentEntity = new CostDocumentEntity();
+        costDocumentEntity.setAmount(amountPerUser);
+        costDocumentEntity.setGroupId(groupId);
+        costDocumentEntity.setCreditorId(creatorId);
+        costDocumentEntity.setDebtorId(userId);
+        costDocumentEntity.setCost(cost);
+        return costDocumentEntity;
+    }
+
+    private CostEventMessage createEventPayloadForCost(CostEntity entity, CostEventMessage.CostOperation costOperation) {
+        CostEventMessage message = new CostEventMessage();
+        message.setCreatorId(entity.getCreatorId());
+        message.setInvolvedUserMobiles(entity.getInvolvedUsers().stream().map(UserEntity::getMobile).collect(Collectors.toList()));
+        message.setAmount(entity.getAmount());
+        message.setTitle(entity.getTitle());
+        message.setCreatedAt(LocalDateTime.now());
+        message.setOperation(costOperation);
+
+        return message;
+    }
+
 }
