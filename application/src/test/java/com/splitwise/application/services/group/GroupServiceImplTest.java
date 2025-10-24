@@ -95,6 +95,14 @@ class GroupServiceImplTest {
    }
 
     @Test
+    void getGroupBalance_userIsNotMemberOfGroup_exception() {
+        GroupEntity group = createGroup(1L, currentUserId + 1, new HashSet<>());
+        when(groupRepository.findGroupByIdAndFetchUsers(any())).thenReturn(Optional.of(group));
+        SystemException ex = assertThrows(SystemException.class, () -> groupService.getGroupBalance(1L));
+        assertEquals(ErrorCodes.NOT_MEMBER_OF_GROUP.getCode(), ex.getErrorCode().getCode());
+    }
+
+    @Test
     void create_userNotFound_exception() {
         when(userService.findById(currentUserId)).thenReturn(Optional.empty());
         CreateGroupRequest request = createGroupRequest();
