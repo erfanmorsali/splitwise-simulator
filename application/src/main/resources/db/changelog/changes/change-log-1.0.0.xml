@@ -197,5 +197,11 @@
                 references splitwise.groups;
         </sql>
     </changeSet>
+    <changeSet id="change-event-table" author="erfan" failOnError="true">
+        <sql>
+            alter table events
+                rename column sent to failed;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
 

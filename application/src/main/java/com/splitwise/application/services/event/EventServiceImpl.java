@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -20,6 +22,21 @@ public class EventServiceImpl implements EventService {
         event.setTopic(topic);
         event.setPayload(convertPayloadToJson(payload));
         eventRepository.save(event);
+    }
+
+    @Override
+    public List<EventEntity> getEvents() {
+        return List.of();
+    }
+
+    @Override
+    public void updateEvents(List<EventEntity> events) {
+        return;
+    }
+
+    @Override
+    public void deleteEvents(List<EventEntity> events) {
+        return;
     }
 
     private String convertPayloadToJson(Object payload) {

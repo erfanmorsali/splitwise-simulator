@@ -24,8 +24,8 @@ public class EventEntity extends BaseEntity {
     private Long id;
     @Column(name = "topic", length = 100)
     private String topic;
-    @Column(name = "sent", columnDefinition = "boolean default false")
-    private boolean sent;
+    @Column(name = "failed", columnDefinition = "boolean default false")
+    private boolean failed;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Object payload;
