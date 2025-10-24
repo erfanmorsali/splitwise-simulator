@@ -9,6 +9,7 @@ import com.splitwise.application.models.entities.group.GroupInviteEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.repositories.group.GroupInviteRepository;
 import com.splitwise.application.repositories.group.GroupRepository;
+import com.splitwise.application.services.event.EventService;
 import com.splitwise.application.services.user.UserService;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.SystemException;
@@ -37,6 +38,8 @@ class GroupServiceImplTest {
     private GroupRepository groupRepository;
     @Mock
     private UserService userService;
+    @Mock
+    private EventService eventService;
     @Mock
     private GroupInviteRepository groupInviteRepository;
 
@@ -254,6 +257,7 @@ class GroupServiceImplTest {
         assertDoesNotThrow(() -> groupService.acceptInvite(1L));
         verify(groupRepository).save(any());
         verify(groupInviteRepository).save(any());
+        verify(eventService).createEvent(any(), any());
     }
 
     @Test
@@ -286,9 +290,10 @@ class GroupServiceImplTest {
         GroupInviteEntity invite = createGroupInvite();
         invite.setAccepted(null);
         when(groupInviteRepository.findFirstByInvitedIdAndGroupId(any(), any())).thenReturn(Optional.of(invite));
-        when(groupRepository.findById(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
+        when(groupRepository.findGroupByIdAndFetchUsers(any())).thenReturn(Optional.of(createGroup(1L, currentUserId, new HashSet<>())));
         assertDoesNotThrow(() -> groupService.rejectInvite(1L));
         verify(groupInviteRepository).save(any());
+        verify(eventService).createEvent(any(), any());
     }
 
 
