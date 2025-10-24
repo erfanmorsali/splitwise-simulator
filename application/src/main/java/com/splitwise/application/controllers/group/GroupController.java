@@ -1,10 +1,7 @@
 package com.splitwise.application.controllers.group;
 
 
-import com.splitwise.application.models.dtos.group.CreateGroupRequest;
-import com.splitwise.application.models.dtos.group.EditGroupRequest;
-import com.splitwise.application.models.dtos.group.GroupInviteRequest;
-import com.splitwise.application.models.dtos.group.GroupResponse;
+import com.splitwise.application.models.dtos.group.*;
 import com.splitwise.application.security.JwtUser;
 import com.splitwise.application.services.group.GroupService;
 import com.splitwise.application.statics.Urls;
@@ -31,6 +28,11 @@ public class GroupController {
     @GetMapping(Urls.GROUP_ID)
     public ResponseEntity<GroupResponse> getById(@PathVariable(value = "id") Long id) {
         return new ResponseEntity<>(service.getById(id), HttpStatus.OK);
+    }
+
+    @GetMapping(Urls.GROUP_BALANCE)
+    public ResponseEntity<List<BalanceResponse>> getBalance(@PathVariable(value = "id") Long id) {
+        return new ResponseEntity<>(service.getGroupBalance(id), HttpStatus.OK);
     }
 
     @PostMapping(Urls.GROUP)
