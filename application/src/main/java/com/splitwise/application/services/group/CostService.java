@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CostService {
     List<CostResponse> getAll(CostFilter filter);
+
+    CostResponse getById(Long id, Long userId, Long groupId);
 }
