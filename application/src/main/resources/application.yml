@@ -38,6 +38,16 @@ spring:
         default_schema: splitwise
     show-sql: true
 
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+
 otp:
   duration:
     120
