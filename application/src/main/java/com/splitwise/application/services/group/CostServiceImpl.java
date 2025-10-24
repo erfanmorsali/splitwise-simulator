@@ -9,6 +9,7 @@ import com.splitwise.application.models.entities.group.GroupEntity;
 import com.splitwise.application.models.entities.user.UserEntity;
 import com.splitwise.application.repositories.group.CostRepository;
 import com.splitwise.application.security.JwtUser;
+import com.splitwise.application.services.user.UserService;
 import com.splitwise.shared.objects.ErrorCodes;
 import com.splitwise.shared.objects.StatusCodes;
 import com.splitwise.shared.objects.SystemException;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class CostServiceImpl implements CostService {
     private final CostRepository costRepository;
     private final GroupService groupService;
+    private final UserService userService;
 
 
     @Override
@@ -47,12 +50,21 @@ public class CostServiceImpl implements CostService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CostResponse create(CreateCostRequest request, Long groupId) {
         Long userId = JwtUser.getAuthenticatedUser().getId();
 
         request.getInvolvedUsers().remove(userId);
         findGroupByIdAndCheckUsersBelongToGroup(userId, request.getInvolvedUsers(), groupId);
-        return null;
+
+        CostEntity costEntity = createCostEntity(request, userId, groupId);
+        costRepository.save(costEntity);
+
+        // TODO : Create Documents To Determine Who Debits To Who
+        // TODO : Send Notif
+        // TODO : Update Tests After This
+
+        return new CostResponse(costEntity);
     }
 
 
@@ -70,5 +82,15 @@ public class CostServiceImpl implements CostService {
         if (!invalidUserIds.isEmpty()) {
             throw new SystemException(StatusCodes.BAD_REQUEST, ErrorCodes.NOT_MEMBER_OF_GROUP, invalidUserIds);
         }
+    }
+
+    private CostEntity createCostEntity(CreateCostRequest request, Long groupId, Long userId) {
+        List<UserEntity> involvedUsers = userService.findByIds(new ArrayList<>(request.getInvolvedUsers()));
+
+        CostEntity costEntity = request.convertToEntity(null);
+        costEntity.setGroupId(groupId);
+        costEntity.setCreatorId(userId);
+        costEntity.setInvolvedUsers(new HashSet<>(involvedUsers));
+        return costEntity;
     }
 }
