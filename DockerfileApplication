@@ -1,0 +1,24 @@
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
+WORKDIR /app
+
+COPY pom.xml .
+COPY shared/pom.xml shared/
+COPY notification/pom.xml notification/
+COPY application/pom.xml application/
+
+COPY shared ./shared
+COPY application ./application
+COPY notification ./notification
+
+# Build only application + shared
+RUN mvn clean install -DskipTests
+
+# Stage 2: Runtime
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+
+# Copy built JAR
+COPY --from=builder /app/application/target/*.jar app.jar
+
+EXPOSE 8080
+CMD java -jar app.jar
