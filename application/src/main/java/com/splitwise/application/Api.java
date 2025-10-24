@@ -1,6 +1,7 @@
 package com.splitwise.application;
 
 
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -12,6 +13,7 @@ import java.util.TimeZone;
 @ComponentScan(value = {"com.splitwise.shared", "com.splitwise.application"})
 @EnableCaching
 @EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @SpringBootApplication
 public class Api {
     public static void main(String[] args) {
