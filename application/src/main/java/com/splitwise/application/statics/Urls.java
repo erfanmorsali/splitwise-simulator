@@ -12,4 +12,8 @@ public abstract class Urls {
     public static final String GROUP_INVITE = "group/{id}/invite";
     public static final String GROUP_INVITE_ACCEPT = "group/{id}/invite/accept";
     public static final String GROUP_INVITE_REJECT = "group/{id}/invite/reject";
+
+
+    // Cost Controller
+    public static final String COST = "group/{groupId}/cost";
 }
