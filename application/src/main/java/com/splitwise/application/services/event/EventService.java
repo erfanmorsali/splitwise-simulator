@@ -1,10 +1,5 @@
 package com.splitwise.application.services.event;
 
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-@Service
-@RequiredArgsConstructor
-public class EventService {
+public interface EventService {
+    void createEvent(Object payload, String topic);
 }
